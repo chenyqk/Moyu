@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Moyu</string>
+    <string name="title_schedule_fragment_activity">日程</string>
+    <string name="title_group_fragment_activity">群组</string>
+    <string name="title_aboutme_fragment_activity">我的</string>
+
+    <string name="hello_world">Hello World</string>
+
+    <string name="Monday">周一</string>
+    <string name="Tuesday">周二</string>
+    <string name="Wednesday">周三</string>
+    <string name="Thursday">周四</string>
+    <string name="Friday">周五</string>
+    <string name="Saturday">周六</string>
+    <string name="Sunday">周日</string>
+</resources>
