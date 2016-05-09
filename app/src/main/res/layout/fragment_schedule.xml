@@ -4,63 +4,70 @@
 
     android:layout_height="match_parent">
 
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/dateTable">
-
-    </TableLayout>
-
-    <ScrollView
+    <com.mstc.moyu.MyTimeTableView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/scrollView">
+        android:id="@+id/myTimeTableView">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    </com.mstc.moyu.MyTimeTableView>
 
-        <TableLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/timeTable">
+    <!--<TableLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/dateTable">-->
 
-        </TableLayout>
+    <!--</TableLayout>-->
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/relativeLayout"
-            android:layout_toRightOf="@+id/timeTable"
-            >
+    <!--<ScrollView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:id="@+id/scrollView">-->
 
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/scrollView2" >
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/course_table">
+        <!--<TableLayout-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/timeTable">-->
 
-                <TableLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/tableLayout"
-                    android:background="#FFFFFF">
+        <!--</TableLayout>-->
+
+        <!--<RelativeLayout-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/relativeLayout"-->
+            <!--android:layout_toRightOf="@+id/timeTable"-->
+            <!--&gt;-->
+
+        <!--<HorizontalScrollView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:id="@+id/scrollView2" >-->
+
+            <!--<RelativeLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:id="@+id/course_table">-->
+
+                <!--<TableLayout-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:id="@+id/tableLayout"-->
+                    <!--android:background="#FFFFFF">-->
 
 
-                </TableLayout>
+                <!--</TableLayout>-->
 
-            </RelativeLayout>
-        </HorizontalScrollView>
+            <!--</RelativeLayout>-->
+        <!--</HorizontalScrollView>-->
 
-        </RelativeLayout>
+        <!--</RelativeLayout>-->
 
-    </RelativeLayout>
+    <!--</RelativeLayout>-->
 
-    </ScrollView>
+    <!--</ScrollView>-->
 
 
 

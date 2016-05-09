@@ -11,27 +11,27 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
 
     private HorizontalScrollViewListener horizontalScrollViewListener = null;
 
-    public MyHorizonalScrollView(Context context) {
+    public MyHorizontalScrollView(Context context) {
         super(context);
     }
 
-    public MyHorizonalScrollView(Context context, AttributeSet attrs) {
+    public MyHorizontalScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public MyHorizonalScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MyHorizontalScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public void setOnHorizonalScrollViewListener(HorizontalScrollViewListener horizontalScrollViewListener){
-        this.horizonalScrollViewListener = horizonalScrollViewListener;
+    public void setOnHorizontalScrollViewListener(HorizontalScrollViewListener horizontalScrollViewListener){
+        this.horizontalScrollViewListener = horizontalScrollViewListener;
     }
 
     @Override
     protected void onScrollChanged(int l,int t,int oldl,int oldt){
         super.onScrollChanged(l, t, oldl, oldt);
-        if(horizonalScrollViewListener != null){
-            horizonalScrollViewListener.onScrollChanged(this,l,t,oldl,oldt);
+        if(horizontalScrollViewListener != null){
+            horizontalScrollViewListener.onScrollChanged(this,l,t,oldl,oldt);
         }
     }
 }
