@@ -49,5 +49,5 @@ public class ScheduleFragment extends Activity {
         myTimeTableView.drawDateTable(2);
         myTimeTableView.drawTable(2);
     }
-    
+
 }
