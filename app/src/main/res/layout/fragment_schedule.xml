@@ -4,30 +4,18 @@
 
     android:layout_height="match_parent">
 
-    <HorizontalScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/scrollView2" >
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/course_table">
+    <com.mstc.moyu.MyTimeTableView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/myTimeTableView">
+
+    </com.mstc.moyu.MyTimeTableView>
 
 
-        <TableLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/tableLayout"
-            android:background="#FFFFFF">
 
 
-        </TableLayout>
-
-        </RelativeLayout>
-    </HorizontalScrollView>
-
-
+>>>>>>> develop
 
 
 
