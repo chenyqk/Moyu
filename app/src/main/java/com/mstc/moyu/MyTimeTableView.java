@@ -147,11 +147,8 @@ public class MyTimeTableView extends RelativeLayout {
         rlp.leftMargin = windowWidth/showColNum;
         rlp.topMargin = windowHeight/showRowNum;
         tableScrollView.setLayoutParams(rlp);
-        //Log.d("enlarge",enlargeCol+"");
         for(int row=0;row<rowNum;++row){
             tableRow = new TableRow(getContext());
-            //tableRow.setBackgroundColor(Color.WHITE);
-            //Log.d("row",row+"");
             for(int col=0;col<colNum;++col){
                 TextView tv = new TextView(getContext());
                 tv.setText("");
@@ -284,17 +281,9 @@ public class MyTimeTableView extends RelativeLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.d("view","a");
         super.onDraw(canvas);
-        Log.d("view","b");
-        //drawTable(enlargeCol);
-        Log.d("view","c");
         // TODO: consider storing these as member variables to reduce
     }
 
-//    @Override
-//    protected void onMeasure(int w,int h){
-//        super.onMeasure(w,h);
-//    }
 
 }
