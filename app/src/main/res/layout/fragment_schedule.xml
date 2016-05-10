@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-
     android:layout_height="match_parent">
 
     <com.mstc.moyu.MyTimeTableView
@@ -10,64 +9,6 @@
         android:id="@+id/myTimeTableView">
 
     </com.mstc.moyu.MyTimeTableView>
-
-    <!--<TableLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/dateTable">-->
-
-    <!--</TableLayout>-->
-
-    <!--<ScrollView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:id="@+id/scrollView">-->
-
-    <!--<RelativeLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent">-->
-
-        <!--<TableLayout-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id="@+id/timeTable">-->
-
-        <!--</TableLayout>-->
-
-        <!--<RelativeLayout-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id="@+id/relativeLayout"-->
-            <!--android:layout_toRightOf="@+id/timeTable"-->
-            <!--&gt;-->
-
-        <!--<HorizontalScrollView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:id="@+id/scrollView2" >-->
-
-            <!--<RelativeLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/course_table">-->
-
-                <!--<TableLayout-->
-                    <!--android:layout_width="fill_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:id="@+id/tableLayout"-->
-                    <!--android:background="#FFFFFF">-->
-
-
-                <!--</TableLayout>-->
-
-            <!--</RelativeLayout>-->
-        <!--</HorizontalScrollView>-->
-
-        <!--</RelativeLayout>-->
-
-    <!--</RelativeLayout>-->
-
-    <!--</ScrollView>-->
 
 
 
