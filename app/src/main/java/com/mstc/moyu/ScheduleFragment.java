@@ -16,6 +16,7 @@ import java.util.TimeZone;
 public class ScheduleFragment extends Activity {
 
     private MyTimeTableView myTimeTableView = null;
+    private MyTopBarView myTopBarView = null;
     private ViewTreeObserver vto = null;
     boolean hasMeasured = false;
 
@@ -25,6 +26,9 @@ public class ScheduleFragment extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.fragment_schedule);
+
+        myTopBarView = (MyTopBarView)findViewById(R.id.myTopBarView);
+
         myTimeTableView = (MyTimeTableView)findViewById(R.id.myTimeTableView);
         vto = myTimeTableView.getViewTreeObserver();
         vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {

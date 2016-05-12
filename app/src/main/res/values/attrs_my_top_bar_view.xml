@@ -1,0 +1,9 @@
+<resources>
+    <declare-styleable name="MyTopBarView">
+        <attr name="weekText" format="string" />
+        <attr name="weekTextSize" format="dimension" />
+        <attr name="weekTextColor" format="color" />
+
+        <attr name="rightButtonBackground" format="color|reference" />
+    </declare-styleable>
+</resources>
