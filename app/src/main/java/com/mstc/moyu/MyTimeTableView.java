@@ -120,8 +120,6 @@ public class MyTimeTableView extends RelativeLayout {
                 switch (msg.what) {
                     case FOCUS_CHANGED: {
                         enlargeCol = (int)msg.obj;
-                        //Log.d("handler","focus changed~");
-                        //removeAllViews();
                         tableLayout.removeAllViews();
                         myDateTable.removeAllViews();
                         myTimeTable.removeAllViews();
