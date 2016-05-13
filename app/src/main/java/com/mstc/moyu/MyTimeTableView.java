@@ -1,13 +1,13 @@
 package com.mstc.moyu;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
@@ -22,13 +22,16 @@ import java.util.Vector;
 public class MyTimeTableView extends RelativeLayout {
 
     private String[] Date = {"周一","周二","周三","周四","周五","周六","周日"};
+    private String[] WeekDay = {"","","","","","",""};
+    private String[] Time = {"早间","8:00\n1","8:55\n2","10:00\n3","10:55\n4","午间","14:30\n5","15:25\n6","16:20\n7",
+                                            "17:15\n8","19:00\n9","19:55\n10","20:50\n11","21:45\n12","晚间"};
     MyHorizontalScrollView dateScrollView,tableHorizonScrollView;
     MyScrollView timeScrollView,tableScrollView;
     TableLayout tableLayout,myTimeTable,myDateTable;
     RelativeLayout tableRelativeLayout;
     TableRow tableRow;
     int enlargeCol;
-    int rowNum,colNum;
+    int rowNum,colNum,showColNum,showRowNum;
     int cellBackGroundResource;
     int windowWidth,windowHeight;
     private final int FOCUS_CHANGED = 233;
@@ -58,10 +61,19 @@ public class MyTimeTableView extends RelativeLayout {
     public void setWindowHeight(int windowHeight){
         this.windowHeight = windowHeight;
     }
+
+    public void setWeekDay(String[] WeekDay){
+        for(int i=0;i<7;i++){
+            this.WeekDay[i] = Date[i] + "\n" + WeekDay[i];
+        }
+    }
+
     private void init(Context context) {
         enlargeCol = 1;
-        rowNum = 8;
+        rowNum = 15;
         colNum = 7;
+        showRowNum = 11;
+        showColNum = 7;
         cellBackGroundResource = R.drawable.biankuang;
         textViewVector = new Vector<>();
         inflate(context,R.layout.my_time_table_view,this);
@@ -108,8 +120,6 @@ public class MyTimeTableView extends RelativeLayout {
                 switch (msg.what) {
                     case FOCUS_CHANGED: {
                         enlargeCol = (int)msg.obj;
-                        Log.d("handler","focus changed~");
-                        //removeAllViews();
                         tableLayout.removeAllViews();
                         myDateTable.removeAllViews();
                         myTimeTable.removeAllViews();
@@ -131,64 +141,72 @@ public class MyTimeTableView extends RelativeLayout {
     }
 
     void drawTable(int enlargeCol){
-        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth*(1-(1/colNum)),windowHeight-200);
-        rlp.leftMargin = windowWidth/colNum;
-        rlp.topMargin = 200;
+        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth*(1-(1/showColNum)),windowHeight*(1-(1/showRowNum)));
+        rlp.leftMargin = windowWidth/showColNum;
+        rlp.topMargin = windowHeight/showRowNum;
         tableScrollView.setLayoutParams(rlp);
-        Log.d("enlarge",enlargeCol+"");
         for(int row=0;row<rowNum;++row){
             tableRow = new TableRow(getContext());
-            //tableRow.setBackgroundColor(Color.WHITE);
-            Log.d("row",row+"");
             for(int col=0;col<colNum;++col){
                 TextView tv = new TextView(getContext());
                 tv.setText("");
                 tv.setGravity(Gravity.CENTER);
                 tv.setBackgroundResource(cellBackGroundResource);
                 final int finalCol = col;
-                tv.setOnTouchListener(new OnTouchListener() {
+                final int finalRow = row;
+                tv.setOnClickListener(new OnClickListener() {
 
                     @Override
-                    public boolean onTouch(View v, MotionEvent event) {
+                    public void onClick(View v) {
+                        Log.d("row,col", finalRow +","+finalCol);
                         Message msg = new Message();
                         msg.what = FOCUS_CHANGED;
                         msg.obj = finalCol;
                         handler.sendMessage(msg);
+                    }
+                });
+                tv.setLongClickable(true);
+                tv.setOnLongClickListener(new OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        Log.d("Long click","LA La LA");
+                        Intent intent = new Intent(getContext(),AddItemActivity.class);
+                        getContext().startActivity(intent);
                         return false;
                     }
                 });
-
                 if(col == enlargeCol){
-                    tableRow.addView(tv,new TableRow.LayoutParams(2*windowWidth/colNum,200,1));
+                    tableRow.addView(tv,new TableRow.LayoutParams(2*windowWidth/showColNum,windowHeight/showRowNum,1));
                 } else {
-                    tableRow.addView(tv,new TableRow.LayoutParams(windowWidth/colNum,200,1));
+                    tableRow.addView(tv,new TableRow.LayoutParams(windowWidth/colNum,windowHeight/showRowNum,1));
                 }
             }
             tableLayout.addView(tableRow);
         }
         addItem("有聊",1,1,2,enlargeCol);//Tuesday,from class 1 to class 2
         addItem("好有聊",4,3,4,enlargeCol);//Friday, from class 3 to class 4
+        addItem("超级无敌有聊",2,1,4,enlargeCol);//Wednesday, from class 1 to class 4
     }
 
     void drawTimeTable(){
-        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth/colNum,windowHeight-200);
-        rlp.topMargin = 200;
+        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth/colNum,windowHeight*(1-(1/showRowNum)));
+        rlp.topMargin = windowHeight/showRowNum;
         rlp.leftMargin = 0;
         timeScrollView.setLayoutParams(rlp);
         for(int row=1;row<=rowNum;++row){
-            Log.d("row",row+"");
+            //Log.d("row",row+"");
             TextView tv = new TextView(getContext());
             TableRow tr = new TableRow(getContext());
-            tv.setText(row+"");
+            tv.setText(Time[row-1]);
             tv.setGravity(Gravity.CENTER);
             tv.setBackgroundResource(cellBackGroundResource);
-            tr.addView(tv,new TableRow.LayoutParams(windowWidth/colNum,200,1));
+            tr.addView(tv,new TableRow.LayoutParams(windowWidth/colNum,windowHeight/showRowNum,1));
             myTimeTable.addView(tr);
         }
     }
 
     void drawDateTable(int enlargeCol){
-        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth*(1 - (1/colNum)),200);
+        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth*(1 - (1/colNum)),windowHeight/showRowNum);
         rlp.leftMargin = windowWidth/colNum;
         rlp.topMargin = 0;
         dateScrollView.setLayoutParams(rlp);
@@ -199,40 +217,51 @@ public class MyTimeTableView extends RelativeLayout {
             tv.setGravity(Gravity.CENTER);
             tv.setBackgroundResource(cellBackGroundResource);
 
-            tv.setText(Date[col]);
-            Log.d("date", Date[col]);
-            tv.setOnTouchListener(new OnTouchListener() {
+            tv.setText(WeekDay[col]);
+            //Log.d("date", WeekDay[col]);
+            tv.setOnClickListener(new OnClickListener() {
                 @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    Log.d("Touched", Date[finalCol]);
+                public void onClick(View v) {
+                    //Log.d("Touched", WeekDay[finalCol]);
                     Message msg = new Message();
                     msg.what = FOCUS_CHANGED;
                     msg.obj = finalCol;
                     handler.sendMessage(msg);
-                       return false;
                 }
             });
 
             if(col == enlargeCol){
-                tr.addView(tv,new TableRow.LayoutParams(2*windowWidth/colNum,200,1));
+                tr.addView(tv,new TableRow.LayoutParams(2*windowWidth/colNum,windowHeight/showRowNum,1));
             } else {
-                tr.addView(tv,new TableRow.LayoutParams(windowWidth/colNum,200,1));
+                tr.addView(tv,new TableRow.LayoutParams(windowWidth/colNum,windowHeight/showRowNum,1));
             }
         }
         myDateTable.addView(tr);
     }
 
-    void addItem(String text,int date,int start,int end,int enlargeCol){
+    void addItem(String text, int date, int start, int end, int enlargeCol){
         TextView info = new TextView(getContext());
+        final int finalDate = date;
+        final String finalText = text;
         textViewVector.add(info);
         info.setText(text);
         info.setBackgroundResource(cellBackGroundResource);
         info.setGravity(Gravity.CENTER);
-        info.setTextSize(12);
+        info.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("item",finalText);
+                Message msg = new Message();
+                msg.what = FOCUS_CHANGED;
+                msg.obj = finalDate;
+                handler.sendMessage(msg);
+            }
+        });
         int w,itemHeight,wEnlarge,itemWidth;
         w = windowWidth/colNum;
+        info.setTextSize((w-16)/6);
         wEnlarge = 2*windowWidth/colNum;
-        itemHeight = 200;
+        itemHeight = windowHeight/showRowNum;
         if(date == enlargeCol){
             itemWidth = wEnlarge;
         } else {
@@ -250,17 +279,9 @@ public class MyTimeTableView extends RelativeLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.d("view","a");
         super.onDraw(canvas);
-        Log.d("view","b");
-        //drawTable(enlargeCol);
-        Log.d("view","c");
         // TODO: consider storing these as member variables to reduce
     }
 
-//    @Override
-//    protected void onMeasure(int w,int h){
-//        super.onMeasure(w,h);
-//    }
 
 }
