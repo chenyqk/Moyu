@@ -120,16 +120,17 @@ public class MyTimeTableView extends RelativeLayout {
                 switch (msg.what) {
                     case FOCUS_CHANGED: {
                         enlargeCol = (int)msg.obj;
-                        tableLayout.removeAllViews();
-                        myDateTable.removeAllViews();
-                        myTimeTable.removeAllViews();
-                        if(textViewVector.size() > 0){
-                            for(int i=0;i<textViewVector.size();++i){
-                                TextView tx = textViewVector.get(i);
-                                tableRelativeLayout.removeView(tx);
-                            }
-                            textViewVector.clear();
-                        }
+//                        tableLayout.removeAllViews();
+//                        myDateTable.removeAllViews();
+//                        myTimeTable.removeAllViews();
+//                        if(textViewVector.size() > 0){
+//                            for(int i=0;i<textViewVector.size();++i){
+//                                TextView tx = textViewVector.get(i);
+//                                tableRelativeLayout.removeView(tx);
+//                            }
+//                            textViewVector.clear();
+//                        }
+                        cleanAllTable();
                         drawTimeTable();
                         drawDateTable(enlargeCol);
                         drawTable(enlargeCol);
@@ -140,6 +141,10 @@ public class MyTimeTableView extends RelativeLayout {
         };
     }
 
+    /**
+     *
+     * @param enlargeCol define which col to be enlarged
+     */
     void drawTable(int enlargeCol){
         RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth*(1-(1/showColNum)),windowHeight*(1-(1/showRowNum)));
         rlp.leftMargin = windowWidth/showColNum;
@@ -275,6 +280,19 @@ public class MyTimeTableView extends RelativeLayout {
         }
         info.setLayoutParams(rlp);
         tableRelativeLayout.addView(info);
+    }
+
+    void cleanAllTable(){
+        tableLayout.removeAllViews();
+        myDateTable.removeAllViews();
+        myTimeTable.removeAllViews();
+        if(textViewVector.size() > 0){
+            for(int i=0;i<textViewVector.size();++i){
+                TextView tx = textViewVector.get(i);
+                tableRelativeLayout.removeView(tx);
+            }
+            textViewVector.clear();
+        }
     }
 
     @Override

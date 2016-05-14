@@ -19,7 +19,7 @@
         android:layout_below="@+id/myTopBarView">
 
     </com.mstc.moyu.MyTimeTableView>
-    
+
 
 
 </RelativeLayout>
