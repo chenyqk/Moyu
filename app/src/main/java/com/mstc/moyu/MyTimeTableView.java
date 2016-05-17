@@ -138,6 +138,7 @@ public class MyTimeTableView extends RelativeLayout {
             }
         };
 
+        //insert record
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -340,7 +341,7 @@ public class MyTimeTableView extends RelativeLayout {
                             cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.TIME))
                     );
                     Vector<Integer> timeVector = Course.parseTimeStr(course.time);
-                    addItem(course.course_name+"@\n"+course.classroom,course.day_of_week,timeVector.firstElement(),timeVector.lastElement(),enlargeCol);
+                    addItem(course.course_name+"\n@"+course.classroom,course.day_of_week,timeVector.firstElement(),timeVector.lastElement(),enlargeCol);
                 }
                 db.close();
     }

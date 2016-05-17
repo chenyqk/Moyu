@@ -51,4 +51,67 @@ public final class DataBaseFactory {
 
         db.insert(MoyuContract.DeletedRepeatAffairEntry.TABLE_NAME,null,contentValues);
     }
+
+    public static void DeleteAffair(final DataBaseHelper dataBaseHelper,final Affair affair){
+        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+
+        String selection =  MoyuContract.AffairEntry.DESCRIPTION + " LIKE ? AND " +
+                                        MoyuContract.AffairEntry.COMMENT + " LIKE ? AND " +
+                                        MoyuContract.AffairEntry.WEEK + " LIKE ? AND " +
+                                        MoyuContract.AffairEntry.DAY_OF_WEEK + " LIKE ? AND " +
+                                        MoyuContract.AffairEntry.DATE + " LIKE ? AND " +
+                                        MoyuContract.AffairEntry.TIME + " LIKE ? AND " +
+                                        MoyuContract.AffairEntry.REPEAT + " LIKE ? AND " +
+                                        MoyuContract.AffairEntry.ALARM + " LIKE ?";
+        String[] selectionArgs = {affair.description,
+                                                    affair.comment,
+                                                    String.valueOf(affair.week),
+                                                    String.valueOf(affair.day_of_week),
+                                                    affair.date,
+                                                    affair.time,
+                                                    String.valueOf(affair.repeat),
+                                                    affair.alarm};
+
+        db.delete(MoyuContract.AffairEntry.TABLE_NAME,selection,selectionArgs);
+    }
+
+    public static void DeleteCourse(final DataBaseHelper dataBaseHelper, final Course course){
+        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+
+        String selection = MoyuContract.CourseEntry.COURSE_NAME + " LIKE ? AND " +
+                                        MoyuContract.CourseEntry.CLASSROOM + " LIKE ? AND " +
+                                        MoyuContract.CourseEntry.WEEK + " LIKE ? AND " +
+                                        MoyuContract.CourseEntry.DAY_OF_WEEK + " LIKE ? AND " +
+                                        MoyuContract.CourseEntry.DATE + " LIKE ? AND " +
+                                        MoyuContract.CourseEntry.TIME + " LIKE ?";
+
+        String[] selectionArgs = {course.course_name,
+                                                    course.classroom,
+                                                    String.valueOf(course.week),
+                                                    String.valueOf(course.day_of_week),
+                                                    course.date,
+                                                    course.time};
+
+        db.delete(MoyuContract.CourseEntry.TABLE_NAME,selection,selectionArgs);
+    }
+
+    public static void DeleteDeletedRepeatAffair(final DataBaseHelper dataBaseHelper,final Affair affair){
+        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+
+        String selection =  MoyuContract.AffairEntry.DESCRIPTION + " LIKE ? AND " +
+                MoyuContract.AffairEntry.COMMENT + " LIKE ? AND " +
+                MoyuContract.AffairEntry.WEEK + " LIKE ? AND " +
+                MoyuContract.AffairEntry.DAY_OF_WEEK + " LIKE ? AND " +
+                MoyuContract.AffairEntry.DATE + " LIKE ? AND " +
+                MoyuContract.AffairEntry.TIME + " LIKE ?";
+
+        String[] selectionArgs = {affair.description,
+                affair.comment,
+                String.valueOf(affair.week),
+                String.valueOf(affair.day_of_week),
+                affair.date,
+                affair.time};
+
+        db.delete(MoyuContract.DeletedRepeatAffairEntry.TABLE_NAME,selection,selectionArgs);
+    }
 }

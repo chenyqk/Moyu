@@ -2,7 +2,6 @@ package com.mstc.db;
 
 import android.app.Service;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
 
 public class DataBaseService extends Service {
@@ -20,11 +19,7 @@ public class DataBaseService extends Service {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
-
-    public void execDelete(String SQL_DELETE){
-        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-        db.execSQL(SQL_DELETE);
-    }
+    
 
     @Override
     public void onDestroy(){
