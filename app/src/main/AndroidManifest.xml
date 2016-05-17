@@ -17,14 +17,19 @@
         </activity>
         <activity
             android:name=".ScheduleFragment"
-            android:label="@string/title_schedule_fragment_activity"></activity>
+            android:label="@string/title_schedule_fragment_activity" />
         <activity
             android:name=".GroupFragment"
-            android:label="@string/title_group_fragment_activity"></activity>
+            android:label="@string/title_group_fragment_activity" />
         <activity
             android:name=".AboutmeFragment"
-            android:label="@string/title_aboutme_fragment_activity"></activity>
-        <activity android:name=".AddItemActivity"></activity>
+            android:label="@string/title_aboutme_fragment_activity" />
+        <activity android:name=".AddItemActivity" />
+
+        <service
+            android:name="com.mstc.db.DataBaseService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

@@ -14,6 +14,7 @@ import android.widget.TextView;
 public class MainActivity extends ActivityGroup {
 
     private TabHost tabHost = null;
+    private Intent dbService = null;
 
 
     @Override
@@ -34,6 +35,8 @@ public class MainActivity extends ActivityGroup {
 
         tabHost.setCurrentTab(0);
 
+        //dbService = new Intent(MainActivity.this,DataBaseService.class);
+        //startService(dbService);
     }
 
     /**
@@ -56,5 +59,13 @@ public class MainActivity extends ActivityGroup {
         ts1.setIndicator(tab);//set the content of each tab
         ts1.setContent(intent);
         tabHost.addTab(ts1);
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+//        if(dbService != null){
+//            stopService(dbService);
+//        }
     }
 }

@@ -27,6 +27,7 @@ public class MyTopBarView extends RelativeLayout {
     private Button rightButton;
     private int backGroundResource;
     private String[] fiveWeekStr;
+    int currentWeek;
 
     private LayoutParams textParam,buttomParam;
 
@@ -47,20 +48,37 @@ public class MyTopBarView extends RelativeLayout {
 
     private void init(final Context context) {
         weekText = new TextView(context);
-        weekStr = "第1周";
+        weekStr = "第1周（本周）";
+        currentWeek = 0;
         textSize = 20;
         weekText.setText(weekStr);
         weekText.setTextSize(textSize);
         weekText.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                final PopupWindow popupWindow = new PopupWindow(150,270);
+                final PopupWindow popupWindow = new PopupWindow(360,270);
                 View contentView = LayoutInflater.from(context).inflate(R.layout.layout_popupwindow,null);
                 popupWindow.setContentView(contentView);
+//                TextView setCurrentWeek = (TextView)contentView.findViewById(R.id.setCurrentWeek);
+//                setCurrentWeek.setText("设置当前周");
+//                setCurrentWeek.setGravity(Gravity.CENTER);
+//                setCurrentWeek.setTextSize(textSize);
+//                setCurrentWeek.setOnClickListener(new OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        /**
+//                         *  TODO: add set current week dialog
+//                         */
+//
+//                    }
+//                });
                 ListView listView = (ListView)contentView.findViewById(R.id.listView);
                 fiveWeekStr = new String[20];
                 for(int i=0;i<20;++i){
                     fiveWeekStr[i] = "第"+(i+1)+"周";
+                    if(i == currentWeek){
+                        fiveWeekStr[i] = fiveWeekStr[i] + "（本周）";
+                    }
                 }
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,R.layout.list_item,fiveWeekStr);
                 listView.setAdapter(adapter);
@@ -79,7 +97,7 @@ public class MyTopBarView extends RelativeLayout {
                 popupWindow.setTouchable(true);
                 popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
                 popupWindow.setOutsideTouchable(true);
-                popupWindow.showAsDropDown(v,-10,0);
+                popupWindow.showAsDropDown(v,-20,0);
 
             }
         });

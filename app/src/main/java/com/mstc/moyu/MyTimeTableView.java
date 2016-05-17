@@ -2,6 +2,8 @@ package com.mstc.moyu;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
 import android.os.Handler;
 import android.os.Message;
@@ -14,17 +16,21 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.util.Vector;
+import com.mstc.db.Course;
+import com.mstc.db.DataBaseHelper;
+import com.mstc.db.MoyuContract;
 
+import java.util.Vector;
 /**
  * TODO: document your custom view class.
  */
 public class MyTimeTableView extends RelativeLayout {
 
-    private String[] Date = {"周一","周二","周三","周四","周五","周六","周日"};
+    private String[] DayOfWeek = {"周一","周二","周三","周四","周五","周六","周日"};
     private String[] WeekDay = {"","","","","","",""};
     private String[] Time = {"早间","8:00\n1","8:55\n2","10:00\n3","10:55\n4","午间","14:30\n5","15:25\n6","16:20\n7",
                                             "17:15\n8","19:00\n9","19:55\n10","20:50\n11","21:45\n12","晚间"};
+    int currentWeek;
     MyHorizontalScrollView dateScrollView,tableHorizonScrollView;
     MyScrollView timeScrollView,tableScrollView;
     TableLayout tableLayout,myTimeTable,myDateTable;
@@ -64,7 +70,7 @@ public class MyTimeTableView extends RelativeLayout {
 
     public void setWeekDay(String[] WeekDay){
         for(int i=0;i<7;i++){
-            this.WeekDay[i] = Date[i] + "\n" + WeekDay[i];
+            this.WeekDay[i] = DayOfWeek[i] + "\n" + WeekDay[i];
         }
     }
 
@@ -76,6 +82,7 @@ public class MyTimeTableView extends RelativeLayout {
         showColNum = 7;
         cellBackGroundResource = R.drawable.biankuang;
         textViewVector = new Vector<>();
+        currentWeek = 0;
         inflate(context,R.layout.my_time_table_view,this);
         tableRelativeLayout = (RelativeLayout)findViewById(R.id.tableRelativeLayout);
         dateScrollView = (MyHorizontalScrollView)findViewById(R.id.myDateScrollView);
@@ -120,20 +127,10 @@ public class MyTimeTableView extends RelativeLayout {
                 switch (msg.what) {
                     case FOCUS_CHANGED: {
                         enlargeCol = (int)msg.obj;
-//                        tableLayout.removeAllViews();
-//                        myDateTable.removeAllViews();
-//                        myTimeTable.removeAllViews();
-//                        if(textViewVector.size() > 0){
-//                            for(int i=0;i<textViewVector.size();++i){
-//                                TextView tx = textViewVector.get(i);
-//                                tableRelativeLayout.removeView(tx);
-//                            }
-//                            textViewVector.clear();
-//                        }
                         cleanAllTable();
                         drawTimeTable();
                         drawDateTable(enlargeCol);
-                        drawTable(enlargeCol);
+                        drawTable(currentWeek,enlargeCol);
                         break;
                     }
                 }
@@ -142,10 +139,9 @@ public class MyTimeTableView extends RelativeLayout {
     }
 
     /**
-     *
-     * @param enlargeCol define which col to be enlarged
+       * @param enlargeCol define which col to be enlarged
      */
-    void drawTable(int enlargeCol){
+    void drawTable(int week,int enlargeCol){
         RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth*(1-(1/showColNum)),windowHeight*(1-(1/showRowNum)));
         rlp.leftMargin = windowWidth/showColNum;
         rlp.topMargin = windowHeight/showRowNum;
@@ -188,9 +184,11 @@ public class MyTimeTableView extends RelativeLayout {
             }
             tableLayout.addView(tableRow);
         }
-        addItem("有聊",1,1,2,enlargeCol);//Tuesday,from class 1 to class 2
-        addItem("好有聊",4,3,4,enlargeCol);//Friday, from class 3 to class 4
-        addItem("超级无敌有聊",2,1,4,enlargeCol);//Wednesday, from class 1 to class 4
+//        addItem("有聊",1,1,2,enlargeCol);//Tuesday,from class 1 to class 2
+//        addItem("好有聊",4,3,4,enlargeCol);//Friday, from class 3 to class 4
+//        addItem("超级无敌有聊",2,1,4,enlargeCol);//Wednesday, from class 1 to class 4
+        currentWeek = week;
+        addEvents(week,enlargeCol);
     }
 
     void drawTimeTable(){
@@ -295,11 +293,43 @@ public class MyTimeTableView extends RelativeLayout {
         }
     }
 
+    void addEvents(int week,int enlargeCol){
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(getContext());
+        SQLiteDatabase db = dataBaseHelper.getReadableDatabase();
+        String[] projection = {
+                MoyuContract.CourseEntry.COURSE_NAME,
+                MoyuContract.CourseEntry.CLASSROOM,
+                MoyuContract.CourseEntry.WEEK,
+                MoyuContract.CourseEntry.DAY_OF_WEEK,
+                MoyuContract.CourseEntry.DATE,
+                MoyuContract.CourseEntry.TIME
+        };
+        Cursor cursor = db.query(MoyuContract.CourseEntry.TABLE_NAME,
+                projection,
+                MoyuContract.CourseEntry.WEEK+"=?",
+                new String[]{week+""},
+                null,
+                null,
+                null
+                );
+        while(cursor.moveToNext()){
+            Course course = new Course(cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.COURSE_NAME)),
+                    cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.CLASSROOM)),
+                    cursor.getInt(cursor.getColumnIndex(MoyuContract.CourseEntry.WEEK)),
+                    cursor.getInt(cursor.getColumnIndex(MoyuContract.CourseEntry.DAY_OF_WEEK)),
+                    cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.DATE)),
+                    cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.TIME))
+            );
+            Vector<Integer> timeVector = Course.parseTimeStr(course.time);
+            addItem(course.course_name+"@\n"+course.classroom,course.day_of_week,timeVector.firstElement(),timeVector.lastElement(),enlargeCol);
+        }
+        db.close();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         // TODO: consider storing these as member variables to reduce
     }
-
 
 }
