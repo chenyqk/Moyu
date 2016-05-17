@@ -17,6 +17,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.mstc.db.Course;
+import com.mstc.db.DataBaseFactory;
 import com.mstc.db.DataBaseHelper;
 import com.mstc.db.MoyuContract;
 
@@ -136,6 +137,24 @@ public class MyTimeTableView extends RelativeLayout {
                 }
             }
         };
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DataBaseHelper dataBaseHelper = new DataBaseHelper(getContext());
+                SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+                Course course = new Course("高等数学","340201",1,2,"2016-05-17","1,2");//第二周,周三,1-2节课
+                String[] projection = {MoyuContract.CourseEntry.COURSE_NAME,MoyuContract.CourseEntry.CLASSROOM};
+                String selection = MoyuContract.CourseEntry.COURSE_NAME + " LIKE ?";
+                String[] selectionArgs = {course.course_name};
+                Cursor cursor = db.query(MoyuContract.CourseEntry.TABLE_NAME,projection, selection,selectionArgs,null,null,null);
+                if(cursor.getCount() == 0){
+                    Log.d("sql","insert~");
+                    DataBaseFactory.InsertCourse(dataBaseHelper,course);
+                }
+            }
+        }).start();
+
     }
 
     /**
@@ -271,7 +290,7 @@ public class MyTimeTableView extends RelativeLayout {
             itemWidth = w;
         }
         RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(itemWidth,itemHeight*(end-start+1));
-        rlp.topMargin = itemHeight * (start-1);
+        rlp.topMargin = itemHeight * start;
         rlp.leftMargin = date*w;
         if(date > enlargeCol){
             rlp.leftMargin = (date-1)*w + wEnlarge;
@@ -293,37 +312,37 @@ public class MyTimeTableView extends RelativeLayout {
         }
     }
 
-    void addEvents(int week,int enlargeCol){
-        DataBaseHelper dataBaseHelper = new DataBaseHelper(getContext());
-        SQLiteDatabase db = dataBaseHelper.getReadableDatabase();
-        String[] projection = {
-                MoyuContract.CourseEntry.COURSE_NAME,
-                MoyuContract.CourseEntry.CLASSROOM,
-                MoyuContract.CourseEntry.WEEK,
-                MoyuContract.CourseEntry.DAY_OF_WEEK,
-                MoyuContract.CourseEntry.DATE,
-                MoyuContract.CourseEntry.TIME
-        };
-        Cursor cursor = db.query(MoyuContract.CourseEntry.TABLE_NAME,
-                projection,
-                MoyuContract.CourseEntry.WEEK+"=?",
-                new String[]{week+""},
-                null,
-                null,
-                null
+    void addEvents(final int week, final int enlargeCol){
+                DataBaseHelper dataBaseHelper = new DataBaseHelper(getContext());
+                SQLiteDatabase db = dataBaseHelper.getReadableDatabase();
+                String[] projection = {
+                        MoyuContract.CourseEntry.COURSE_NAME,
+                        MoyuContract.CourseEntry.CLASSROOM,
+                        MoyuContract.CourseEntry.WEEK,
+                        MoyuContract.CourseEntry.DAY_OF_WEEK,
+                        MoyuContract.CourseEntry.DATE,
+                        MoyuContract.CourseEntry.TIME
+                };
+                Cursor cursor = db.query(MoyuContract.CourseEntry.TABLE_NAME,
+                        projection,
+                        MoyuContract.CourseEntry.WEEK+"=?",
+                        new String[]{week+""},
+                        null,
+                        null,
+                        null
                 );
-        while(cursor.moveToNext()){
-            Course course = new Course(cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.COURSE_NAME)),
-                    cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.CLASSROOM)),
-                    cursor.getInt(cursor.getColumnIndex(MoyuContract.CourseEntry.WEEK)),
-                    cursor.getInt(cursor.getColumnIndex(MoyuContract.CourseEntry.DAY_OF_WEEK)),
-                    cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.DATE)),
-                    cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.TIME))
-            );
-            Vector<Integer> timeVector = Course.parseTimeStr(course.time);
-            addItem(course.course_name+"@\n"+course.classroom,course.day_of_week,timeVector.firstElement(),timeVector.lastElement(),enlargeCol);
-        }
-        db.close();
+                while(cursor.moveToNext()){
+                    Course course = new Course(cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.COURSE_NAME)),
+                            cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.CLASSROOM)),
+                            cursor.getInt(cursor.getColumnIndex(MoyuContract.CourseEntry.WEEK)),
+                            cursor.getInt(cursor.getColumnIndex(MoyuContract.CourseEntry.DAY_OF_WEEK)),
+                            cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.DATE)),
+                            cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.TIME))
+                    );
+                    Vector<Integer> timeVector = Course.parseTimeStr(course.time);
+                    addItem(course.course_name+"@\n"+course.classroom,course.day_of_week,timeVector.firstElement(),timeVector.lastElement(),enlargeCol);
+                }
+                db.close();
     }
 
     @Override
