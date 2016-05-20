@@ -16,11 +16,16 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.mstc.db.Affair;
 import com.mstc.db.Course;
 import com.mstc.db.DataBaseFactory;
 import com.mstc.db.DataBaseHelper;
 import com.mstc.db.MoyuContract;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
 /**
  * TODO: document your custom view class.
@@ -313,37 +318,294 @@ public class MyTimeTableView extends RelativeLayout {
         }
     }
 
+    /**
+     *  procedure as follow
+     *  1 - find the 7 day of the week
+     *  2 - open database, add item day by day(set an array to judge to find conflicts in course and affair)
+     *  3 - add course first, then add affair, if is repeat affair, check if we have record in the delete table
+     *  4 -close database
+     *
+     * @param week which week to show
+     * @param enlargeCol which col to enlarge
+     */
     void addEvents(final int week, final int enlargeCol){
-                DataBaseHelper dataBaseHelper = new DataBaseHelper(getContext());
-                SQLiteDatabase db = dataBaseHelper.getReadableDatabase();
-                String[] projection = {
-                        MoyuContract.CourseEntry.COURSE_NAME,
-                        MoyuContract.CourseEntry.CLASSROOM,
-                        MoyuContract.CourseEntry.WEEK,
-                        MoyuContract.CourseEntry.DAY_OF_WEEK,
-                        MoyuContract.CourseEntry.DATE,
-                        MoyuContract.CourseEntry.TIME
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(getContext());
+        SQLiteDatabase db = dataBaseHelper.getReadableDatabase();
+
+        for(int day_of_week=0;day_of_week<7;day_of_week++){
+            int[] isOccupied = new int[15];
+            Cursor cursor;
+            for(int i=0;i<15;i++){
+                isOccupied[i] = 0;
+            }
+            //----------------------------- add course-------------------------------------------
+            String[] courseProjection = {
+                    MoyuContract.CourseEntry.COURSE_NAME,
+                    MoyuContract.CourseEntry.CLASSROOM,
+                    MoyuContract.CourseEntry.WEEK,
+                    MoyuContract.CourseEntry.DAY_OF_WEEK,
+                    MoyuContract.CourseEntry.DATE,
+                    MoyuContract.CourseEntry.TIME
+            };
+            //find current week and current day course
+            String courseSelection =
+                    MoyuContract.CourseEntry.WEEK + " LIKE ? AND " +
+                    MoyuContract.CourseEntry.DAY_OF_WEEK + " LIKE ?";
+            String[] courseSelectionArgs = {week+"",day_of_week+""};
+            cursor = db.query(MoyuContract.CourseEntry.TABLE_NAME,
+                    courseProjection,
+                    courseSelection,
+                    courseSelectionArgs,
+                    null,
+                    null,
+                    null
+            );
+            while(cursor.moveToNext()){
+                Course course = new Course(
+                        cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.COURSE_NAME)),
+                        cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.CLASSROOM)),
+                        cursor.getInt(cursor.getColumnIndex(MoyuContract.CourseEntry.WEEK)),
+                        cursor.getInt(cursor.getColumnIndex(MoyuContract.CourseEntry.DAY_OF_WEEK)),
+                        cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.DATE)),
+                        cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.TIME))
+                );
+                Vector<Vector<Integer>> timeVector = Course.parseTimeStr(course.time);
+                for(int i=0;i<timeVector.size();i++){
+                    int startTime = timeVector.get(i).firstElement();
+                    int endTime = timeVector.get(i).lastElement();
+                    boolean noConflict = true;
+                    for(int j=startTime;j<=endTime;j++){//find conflict
+                        if(isOccupied[j] ==0){
+                            isOccupied[j] = 1;
+                        } else {
+                            noConflict = false;
+                        }
+                    }
+                    if(noConflict){
+                        addItem(course.course_name+"\n@"+course.classroom,course.day_of_week,startTime,endTime,enlargeCol);
+                    } else {
+                        Log.d("add item conflit",startTime + "-" + endTime);
+                    }
+                }
+            }
+            cursor.close();
+            //----------------------------- add affair(non repeat)-------------------------------------------
+            String[] affairProjection = {
+                    MoyuContract.AffairEntry.DESCRIPTION,
+                    MoyuContract.AffairEntry.COMMENT,
+                    MoyuContract.AffairEntry.WEEK,
+                    MoyuContract.AffairEntry.DAY_OF_WEEK,
+                    MoyuContract.AffairEntry.DATE,
+                    MoyuContract.AffairEntry.TIME,
+                    MoyuContract.AffairEntry.REPEAT,
+                    MoyuContract.AffairEntry.ALARM
+            };
+            String affairSelection =
+                    MoyuContract.AffairEntry.WEEK + " LIKE ? AND " +
+                    MoyuContract.AffairEntry.DAY_OF_WEEK + " LIKE ? AND " +
+                    MoyuContract.AffairEntry.REPEAT + " LIKE ?";
+            String[] affairSelectionArgs = {week+"",day_of_week+"", "-1"};//repeat == -1 stands for non repeat affair
+            cursor = db.query(
+                    MoyuContract.AffairEntry.TABLE_NAME,
+                    affairProjection,
+                    affairSelection,
+                    affairSelectionArgs,
+                    null,
+                    null,
+                    null);
+            while(cursor.moveToNext()){
+                Affair affair = new Affair(
+                        cursor.getString(cursor.getColumnIndex(MoyuContract.AffairEntry.DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndex(MoyuContract.AffairEntry.COMMENT)),
+                        cursor.getInt(cursor.getColumnIndex(MoyuContract.AffairEntry.WEEK)),
+                        cursor.getInt(cursor.getColumnIndex(MoyuContract.AffairEntry.DAY_OF_WEEK)),
+                        cursor.getString(cursor.getColumnIndex(MoyuContract.AffairEntry.DATE)),
+                        cursor.getString(cursor.getColumnIndex(MoyuContract.AffairEntry.TIME)),
+                        cursor.getInt(cursor.getColumnIndex(MoyuContract.AffairEntry.REPEAT)),
+                        cursor.getString(cursor.getColumnIndex(MoyuContract.AffairEntry.ALARM))
+                );
+                Vector<Vector<Integer>> timeVector = Affair.parseTimeStr(affair.time);
+                for(int i=0;i<timeVector.size();i++){
+                    int startTime = timeVector.get(i).firstElement();
+                    int endTime = timeVector.get(i).lastElement();
+                    int noConflict = 1;
+                    for(int j=startTime;j<=endTime;j++){//find conflict
+                        if(isOccupied[j] ==0){
+                            isOccupied[j] = 1;
+                        } else if(isOccupied[j] == 1) {
+                            isOccupied[j] = 2;
+                            noConflict = 2;
+                        } else {
+                            noConflict = 0;
+                        }
+                    }
+                    if(noConflict == 1){
+                        addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol);
+                    } else if(noConflict == 2){//have both course and affair
+                        //TODO: change background when we have both course and affair
+                        addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol);
+                    } else {
+                        Log.d("add item conflit",startTime + "-" + endTime);
+                    }
+                }
+            }
+            cursor.close();
+            //----------------------------- add affair(repeat)------------------------------------------------
+            String repeatAffairSelection = MoyuContract.AffairEntry.REPEAT + " >= ?";//find all repeat affair
+            String[] repeatAffairSelectionArgs = {"0"};//repeat >= 0 stands for repeat affair
+            cursor = db.query(MoyuContract.AffairEntry.TABLE_NAME,
+                    affairProjection,
+                    repeatAffairSelection,
+                    repeatAffairSelectionArgs,
+                    null,
+                    null,
+                    null);
+            while(cursor.moveToNext()){
+                Affair affair = new Affair(
+                        cursor.getString(cursor.getColumnIndex(MoyuContract.AffairEntry.DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndex(MoyuContract.AffairEntry.COMMENT)),
+                        cursor.getInt(cursor.getColumnIndex(MoyuContract.AffairEntry.WEEK)),
+                        cursor.getInt(cursor.getColumnIndex(MoyuContract.AffairEntry.DAY_OF_WEEK)),
+                        cursor.getString(cursor.getColumnIndex(MoyuContract.AffairEntry.DATE)),
+                        cursor.getString(cursor.getColumnIndex(MoyuContract.AffairEntry.TIME)),
+                        cursor.getInt(cursor.getColumnIndex(MoyuContract.AffairEntry.REPEAT)),
+                        cursor.getString(cursor.getColumnIndex(MoyuContract.AffairEntry.ALARM))
+                );
+                //find if the repeat affair is deleted, execute a query in deletedRepeatAffair
+                String[] deletedAffairProjection = {MoyuContract.DeletedRepeatAffairEntry.DESCRIPTION};
+                String deletedAffairSelection =
+                        MoyuContract.DeletedRepeatAffairEntry.DESCRIPTION + " LIKE ? AND " +
+                        MoyuContract.DeletedRepeatAffairEntry.COMMENT + " LIKE ? AND " +
+                        MoyuContract.DeletedRepeatAffairEntry.WEEK + " LIKE ? AND " +
+                        MoyuContract.DeletedRepeatAffairEntry.DAY_OF_WEEK + " LIKE ? AND " +
+                        MoyuContract.DeletedRepeatAffairEntry.TIME + " LIKE ?";
+                String[] deletedAffairSelectionArgs = {
+                        affair.description,
+                        affair.comment,
+                        affair.week+"",
+                        affair.day_of_week+"",
+                        affair.time+""
                 };
-                Cursor cursor = db.query(MoyuContract.CourseEntry.TABLE_NAME,
-                        projection,
-                        MoyuContract.CourseEntry.WEEK+"=?",
-                        new String[]{week+""},
+                Cursor mCursor = db.query(
+                        MoyuContract.DeletedRepeatAffairEntry.TABLE_NAME,
+                        deletedAffairProjection,
+                        deletedAffairSelection,
+                        deletedAffairSelectionArgs,
                         null,
                         null,
                         null
-                );
-                while(cursor.moveToNext()){
-                    Course course = new Course(cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.COURSE_NAME)),
-                            cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.CLASSROOM)),
-                            cursor.getInt(cursor.getColumnIndex(MoyuContract.CourseEntry.WEEK)),
-                            cursor.getInt(cursor.getColumnIndex(MoyuContract.CourseEntry.DAY_OF_WEEK)),
-                            cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.DATE)),
-                            cursor.getString(cursor.getColumnIndex(MoyuContract.CourseEntry.TIME))
-                    );
-                    Vector<Integer> timeVector = Course.parseTimeStr(course.time);
-                    addItem(course.course_name+"\n@"+course.classroom,course.day_of_week,timeVector.firstElement(),timeVector.lastElement(),enlargeCol);
+                        );
+                if(mCursor.getCount() == 0){//this repeat affair is not deleted
+                    //TODO: check if we have to add this affair in this day
+                    boolean isAdd = false;
+                    switch (affair.repeat){
+                        case 0:{//everyday
+                            isAdd = true;
+                            break;
+                        }
+                        case 1:{//every two day
+                            int dayDiff = (week - affair.week)*7 + (day_of_week - affair.day_of_week);
+                            if(dayDiff%2 == 0){
+                                isAdd = true;
+                            } else {
+                                isAdd = false;
+                            }
+                        }
+                        case 2:{//every week
+                            if(day_of_week == affair.day_of_week){
+                                isAdd = true;
+                            } else {
+                                isAdd = false;
+                            }
+                            break;
+                        }
+                        case 3:{//every month
+                            int dayDiff = (week - affair.week)*7 + (day_of_week - affair.day_of_week);
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            Date affairDate=null;
+                            try {
+                                affairDate = sdf.parse(affair.date);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            if(affairDate!=null){
+                                Calendar c = Calendar.getInstance();
+                                c.setTime(affairDate);
+                                int affairDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
+                                c.add(Calendar.DATE,dayDiff);
+                                int currentDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
+                                if(affairDayOfMonth == currentDayOfMonth){
+                                    isAdd = true;
+                                } else {
+                                    isAdd =false;
+                                }
+                            }
+                            break;
+                        }
+                        case 4:{//every year
+                            int dayDiff = (week - affair.week)*7 + (day_of_week - affair.day_of_week);
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            Date affairDate=null;
+                            try {
+                                affairDate = sdf.parse(affair.date);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            if(affairDate!=null){
+                                Calendar c = Calendar.getInstance();
+                                c.setTime(affairDate);
+                                int affairDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
+                                int affairMonth = c.get(Calendar.MONTH);
+                                c.add(Calendar.DATE,dayDiff);
+                                int currentDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
+                                int currentMonth = c.get(Calendar.MONTH);
+                                if(affairDayOfMonth == currentDayOfMonth && affairMonth == currentMonth){
+                                    isAdd = true;
+                                } else {
+                                    isAdd =false;
+                                }
+                            }
+                            break;
+                        }
+                        case 5:{//work day
+                            if(day_of_week <= 4){
+                                isAdd = true;
+                            } else {
+                                isAdd = false;
+                            }
+                            break;
+                        }
+                    }
+                    Vector<Vector<Integer>> timeVector = Affair.parseTimeStr(affair.time);
+                    for(int i=0;i<timeVector.size();i++){
+                        int startTime = timeVector.get(i).firstElement();
+                        int endTime = timeVector.get(i).lastElement();
+                        int noConflict = 1;
+                        for(int j=startTime;j<=endTime;j++){//find conflict
+                            if(isOccupied[j] ==0){
+                                isOccupied[j] = 1;
+                            } else if(isOccupied[j] == 1) {
+                                isOccupied[j] = 2;
+                                noConflict = 2;
+                            } else {
+                                noConflict = 0;
+                            }
+                        }
+                        if(noConflict == 1){
+                            addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol);
+                        } else if(noConflict == 2){//have both course and affair
+                            //TODO: change background when we have both course and affair
+                            addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol);
+                        } else {
+                            Log.d("add item conflit",startTime + "-" + endTime);
+                        }
+                    }
                 }
-                db.close();
+                mCursor.close();
+            }
+            cursor.close();
+        }
+        db.close();
     }
 
     @Override

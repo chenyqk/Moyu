@@ -22,12 +22,34 @@ public class Course {
         this.time = time;
     }
 
-    public static Vector<Integer> parseTimeStr(String timeStr) {
+    /**
+     *  input "1,2,3,4,5,6,8,9,10,11",output <1,6>,<8,11>
+     * @param timeStr
+     * @return
+     */
+    public static Vector<Vector<Integer>> parseTimeStr(String timeStr) {
         String[] timeArray = timeStr.split(",");
-        Vector<Integer> timeVector = new Vector<>();
-        for (int i = 0; i < timeArray.length; i++) {
-            timeVector.add(Integer.parseInt(timeArray[i]));
+        Vector<Vector<Integer>> timeVector = new Vector<>();
+        int beginTime = Integer.parseInt(timeArray[0]);
+        int endTime = Integer.parseInt(timeArray[0]);
+        for (int i = 1; i < timeArray.length; i++) {
+            int time = Integer.parseInt(timeArray[i]);
+            if(time == (endTime + 1)){
+                endTime++;
+            } else {
+                Vector<Integer> tmp = new Vector<>(2);
+                tmp.add(new Integer(beginTime));
+                tmp.add(new Integer(endTime));
+                beginTime = time;
+                endTime = time;
+                timeVector.add(tmp);
+            }
+            //timeVector.add(Integer.parseInt(timeArray[i]));
         }
+        Vector<Integer> tmp = new Vector<>(2);
+        tmp.add(new Integer(beginTime));
+        tmp.add(new Integer(endTime));
+        timeVector.add(tmp);
         return timeVector;
     }
 }
