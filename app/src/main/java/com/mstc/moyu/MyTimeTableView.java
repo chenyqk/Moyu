@@ -152,7 +152,7 @@ public class MyTimeTableView extends RelativeLayout {
                 DataBaseFactory.ClearCourseTable(dataBaseHelper);
                 DataBaseFactory.ClearDeletedRepeatAffairTable(dataBaseHelper);
                 SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-                Course course = new Course("高等数学","340201",1,2,"2016-05-17","1,2");//第二周,周三,1-2节课
+                Course course = new Course("高等数学","340201",1,2,"2016-05-25","1,2");//第二周,周三,1-2节课
                 String[] projection = {MoyuContract.CourseEntry.COURSE_NAME,MoyuContract.CourseEntry.CLASSROOM};
                 String selection = MoyuContract.CourseEntry.COURSE_NAME + " LIKE ?";
                 String[] selectionArgs = {course.course_name};
@@ -163,7 +163,7 @@ public class MyTimeTableView extends RelativeLayout {
                 }
                 cursor.close();
                 //non-repeat affair
-                Affair affair1 = new Affair("打羽毛球","和小雅打羽毛球",2,3,"2016-05-25","0,1,2,3",-1,"0000000");//第三周，周四，早间和1-3节课
+                Affair affair1 = new Affair("打羽毛球","和小雅打羽毛球",2,3,"2016-06-02","0,1,2,3",-1,"0000000");//第三周，周四，早间和1-3节课
                 projection[0] = MoyuContract.AffairEntry.DESCRIPTION;
                 projection[1] = MoyuContract.AffairEntry.DATE;
                 selection = MoyuContract.AffairEntry.DESCRIPTION + " LIKE ?";
@@ -175,7 +175,7 @@ public class MyTimeTableView extends RelativeLayout {
                 }
                 cursor.close();
                 //repeat affair
-                Affair affair2 = new Affair("跑步","西区运动场",2,3,"2016-05-25","14",3,"0000000");//每月，晚间
+                Affair affair2 = new Affair("跑步","西区运动场",2,3,"2016-06-02","14",3,"0000000");//每月，晚间
                 projection[0] = MoyuContract.AffairEntry.DESCRIPTION;
                 projection[1] = MoyuContract.AffairEntry.DATE;
                 selection = MoyuContract.AffairEntry.DESCRIPTION + " LIKE ?";
@@ -187,7 +187,7 @@ public class MyTimeTableView extends RelativeLayout {
                 }
                 cursor.close();
                 //delete repeat affair
-                Affair affair3 = new Affair("跑步","西区运动场",2,3,"2016-05-25","14",3,"0000000");//每月，晚间，5月25晚暂停跑步
+                Affair affair3 = new Affair("跑步","西区运动场",2,3,"2016-06-02","14",3,"0000000");//每月，晚间，6月2晚暂停跑步
                 projection[0] = MoyuContract.DeletedRepeatAffairEntry.DESCRIPTION;
                 projection[1] = MoyuContract.DeletedRepeatAffairEntry.DATE;
                 selection = MoyuContract.DeletedRepeatAffairEntry.DESCRIPTION + " LIKE ?";
