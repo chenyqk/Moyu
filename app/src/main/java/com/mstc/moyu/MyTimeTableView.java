@@ -143,11 +143,14 @@ public class MyTimeTableView extends RelativeLayout {
             }
         };
 
-        //insert record
+        //insert record test
         new Thread(new Runnable() {
             @Override
             public void run() {
                 DataBaseHelper dataBaseHelper = new DataBaseHelper(getContext());
+                DataBaseFactory.ClearAffairTable(dataBaseHelper);
+                DataBaseFactory.ClearCourseTable(dataBaseHelper);
+                DataBaseFactory.ClearDeletedRepeatAffairTable(dataBaseHelper);
                 SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
                 Course course = new Course("高等数学","340201",1,2,"2016-05-17","1,2");//第二周,周三,1-2节课
                 String[] projection = {MoyuContract.CourseEntry.COURSE_NAME,MoyuContract.CourseEntry.CLASSROOM};
@@ -155,9 +158,46 @@ public class MyTimeTableView extends RelativeLayout {
                 String[] selectionArgs = {course.course_name};
                 Cursor cursor = db.query(MoyuContract.CourseEntry.TABLE_NAME,projection, selection,selectionArgs,null,null,null);
                 if(cursor.getCount() == 0){
-                    Log.d("sql","insert~");
+                    Log.d("sql","insert course~");
                     DataBaseFactory.InsertCourse(dataBaseHelper,course);
                 }
+                cursor.close();
+                //non-repeat affair
+                Affair affair1 = new Affair("打羽毛球","和小雅打羽毛球",2,3,"2016-05-25","0,1,2,3",-1,"0000000");//第三周，周四，早间和1-3节课
+                projection[0] = MoyuContract.AffairEntry.DESCRIPTION;
+                projection[1] = MoyuContract.AffairEntry.DATE;
+                selection = MoyuContract.AffairEntry.DESCRIPTION + " LIKE ?";
+                selectionArgs[0] = affair1.description;
+                cursor = db.query(MoyuContract.AffairEntry.TABLE_NAME,projection,selection,selectionArgs,null,null,null);
+                if(cursor.getCount() == 0){
+                    Log.d("sql","insert non-repeat affair~");
+                    DataBaseFactory.InsertAffair(dataBaseHelper,affair1);
+                }
+                cursor.close();
+                //repeat affair
+                Affair affair2 = new Affair("跑步","西区运动场",2,3,"2016-05-25","14",3,"0000000");//每月，晚间
+                projection[0] = MoyuContract.AffairEntry.DESCRIPTION;
+                projection[1] = MoyuContract.AffairEntry.DATE;
+                selection = MoyuContract.AffairEntry.DESCRIPTION + " LIKE ?";
+                selectionArgs[0] = affair2.description;
+                cursor = db.query(MoyuContract.AffairEntry.TABLE_NAME,projection,selection,selectionArgs,null,null,null);
+                if(cursor.getCount() == 0){
+                    Log.d("sql","insert repeat affair~");
+                    DataBaseFactory.InsertAffair(dataBaseHelper,affair2);
+                }
+                cursor.close();
+                //delete repeat affair
+                Affair affair3 = new Affair("跑步","西区运动场",2,3,"2016-05-25","14",3,"0000000");//每月，晚间，5月25晚暂停跑步
+                projection[0] = MoyuContract.DeletedRepeatAffairEntry.DESCRIPTION;
+                projection[1] = MoyuContract.DeletedRepeatAffairEntry.DATE;
+                selection = MoyuContract.DeletedRepeatAffairEntry.DESCRIPTION + " LIKE ?";
+                selectionArgs[0] = affair3.description;
+                cursor = db.query(MoyuContract.DeletedRepeatAffairEntry.TABLE_NAME,projection,selection,selectionArgs,null,null,null);
+                if(cursor.getCount() == 0){
+                    Log.d("sql","insert deleted repeat affair~");
+                    DataBaseFactory.InsertDeletedRepeatAffair(dataBaseHelper,affair3);
+                }
+                cursor.close();
             }
         }).start();
 
@@ -482,8 +522,8 @@ public class MyTimeTableView extends RelativeLayout {
                 String[] deletedAffairSelectionArgs = {
                         affair.description,
                         affair.comment,
-                        affair.week+"",
-                        affair.day_of_week+"",
+                        week+"",
+                        day_of_week+"",
                         affair.time+""
                 };
                 Cursor mCursor = db.query(
@@ -495,6 +535,7 @@ public class MyTimeTableView extends RelativeLayout {
                         null,
                         null
                         );
+                Log.d("delete record match",mCursor.getCount()+"");
                 if(mCursor.getCount() == 0){//this repeat affair is not deleted
                     //TODO: check if we have to add this affair in this day
                     boolean isAdd = false;
@@ -505,11 +546,8 @@ public class MyTimeTableView extends RelativeLayout {
                         }
                         case 1:{//every two day
                             int dayDiff = (week - affair.week)*7 + (day_of_week - affair.day_of_week);
-                            if(dayDiff%2 == 0){
-                                isAdd = true;
-                            } else {
-                                isAdd = false;
-                            }
+                            isAdd = (dayDiff%2 == 0);
+                            break;
                         }
                         case 2:{//every week
                             if(day_of_week == affair.day_of_week){
@@ -534,6 +572,12 @@ public class MyTimeTableView extends RelativeLayout {
                                 int affairDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
                                 c.add(Calendar.DATE,dayDiff);
                                 int currentDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
+                                Log.d("currentDayOfMonth",currentDayOfMonth+"");
+                                Log.d("affairDayOfMonth",affairDayOfMonth+"");
+                                Log.d("DayDiff",dayDiff+"");
+                                Log.d("currentDay",c.get(Calendar.DATE)+"");
+                                c.setTime(affairDate);
+                                Log.d("affairDay",c.get(Calendar.DATE)+"");
                                 if(affairDayOfMonth == currentDayOfMonth){
                                     isAdd = true;
                                 } else {
@@ -576,28 +620,30 @@ public class MyTimeTableView extends RelativeLayout {
                             break;
                         }
                     }
-                    Vector<Vector<Integer>> timeVector = Affair.parseTimeStr(affair.time);
-                    for(int i=0;i<timeVector.size();i++){
-                        int startTime = timeVector.get(i).firstElement();
-                        int endTime = timeVector.get(i).lastElement();
-                        int noConflict = 1;
-                        for(int j=startTime;j<=endTime;j++){//find conflict
-                            if(isOccupied[j] ==0){
-                                isOccupied[j] = 1;
-                            } else if(isOccupied[j] == 1) {
-                                isOccupied[j] = 2;
-                                noConflict = 2;
-                            } else {
-                                noConflict = 0;
+                    if(isAdd){
+                        Vector<Vector<Integer>> timeVector = Affair.parseTimeStr(affair.time);
+                        for(int i=0;i<timeVector.size();i++){
+                            int startTime = timeVector.get(i).firstElement();
+                            int endTime = timeVector.get(i).lastElement();
+                            int noConflict = 1;
+                            for(int j=startTime;j<=endTime;j++){//find conflict
+                                if(isOccupied[j] ==0){
+                                    isOccupied[j] = 1;
+                                } else if(isOccupied[j] == 1) {
+                                    isOccupied[j] = 2;
+                                    noConflict = 2;
+                                } else {
+                                    noConflict = 0;
+                                }
                             }
-                        }
-                        if(noConflict == 1){
-                            addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol);
-                        } else if(noConflict == 2){//have both course and affair
-                            //TODO: change background when we have both course and affair
-                            addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol);
-                        } else {
-                            Log.d("add item conflit",startTime + "-" + endTime);
+                            if(noConflict == 1){
+                                addItem(affair.description,day_of_week,startTime,endTime,enlargeCol);
+                            } else if(noConflict == 2){//have both course and affair
+                                //TODO: change background when we have both course and affair
+                                addItem(affair.description,day_of_week,startTime,endTime,enlargeCol);
+                            } else {
+                                Log.d("add item conflit",startTime + "-" + endTime);
+                            }
                         }
                     }
                 }

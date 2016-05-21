@@ -206,4 +206,19 @@ public final class DataBaseFactory {
         int count = db.update(MoyuContract.DeletedRepeatAffairEntry.TABLE_NAME,contentValues,selection,selectionArgs);
         return count;
     }
+
+    public static void ClearAffairTable(final DataBaseHelper dataBaseHelper){
+        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+        db.execSQL("DELETE FROM " + MoyuContract.AffairEntry.TABLE_NAME + ";");
+    }
+
+    public static void ClearCourseTable(final DataBaseHelper dataBaseHelper){
+        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+        db.execSQL("DELETE FROM " + MoyuContract.CourseEntry.TABLE_NAME + ";");
+    }
+
+    public static void ClearDeletedRepeatAffairTable(final DataBaseHelper dataBaseHelper){
+        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+        db.execSQL("DELETE FROM " + MoyuContract.DeletedRepeatAffairEntry.TABLE_NAME + ";");
+    }
 }
