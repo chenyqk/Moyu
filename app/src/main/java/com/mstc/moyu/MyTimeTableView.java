@@ -362,6 +362,15 @@ public class MyTimeTableView extends RelativeLayout {
                 handler.sendMessage(msg);
             }
         });
+        info.setLongClickable(true);
+        info.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent intent = new Intent(getContext(),AddItemActivity.class);
+                getContext().startActivity(intent);
+                return false;
+            }
+        });
         int itemHeight,itemWidth;
         info.setTextSize(TypedValue.COMPLEX_UNIT_PX,getResources().getDimension(R.dimen.y26));
         itemHeight = (int)getResources().getDimension(R.dimen.y82);

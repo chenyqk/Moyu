@@ -7,13 +7,16 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -27,13 +30,14 @@ public class MyTopBarView extends RelativeLayout {
     private String weekStr;
     private TextView weekText;
     private Button rightButton;
+    private ImageView imageView;
     private int backGroundResource;
     private String[] fiveWeekStr;
     int currentWeek;
     int popupWindowWidth = (int)getResources().getDimension(R.dimen.x250);
     int popupWindowHeight = (int)getResources().getDimension(R.dimen.y220);
 
-    private LayoutParams textParam,buttomParam;
+    private LayoutParams textParam,buttomParam,imageParam;
 
     public MyTopBarView(Context context) {
         super(context);
@@ -65,6 +69,7 @@ public class MyTopBarView extends RelativeLayout {
                 View contentView = LayoutInflater.from(context).inflate(R.layout.layout_popupwindow,null);
                 popupWindow.setContentView(contentView);
                 ListView listView = (ListView)contentView.findViewById(R.id.listView);
+                imageView.setImageResource(R.drawable.title_more);
                 fiveWeekStr = new String[20];
                 for(int i=0;i<20;++i){
                     fiveWeekStr[i] = "第"+(i+1)+"周";
@@ -78,6 +83,7 @@ public class MyTopBarView extends RelativeLayout {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         weekText.setText(fiveWeekStr[position]);
+
                         Intent intent = new Intent("SHOW_WEEK_CHANGED");
                         intent.putExtra("SHOW_WEEK",position);
                         context.sendBroadcast(intent);
@@ -91,12 +97,27 @@ public class MyTopBarView extends RelativeLayout {
                 popupWindow.setOutsideTouchable(true);
 
                 popupWindow.showAsDropDown(v,0,0);
-
+                popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                    @Override
+                    public void onDismiss() {
+                        imageView.setImageResource(R.drawable.title_more_reverse);
+                    }
+                });
             }
         });
         textParam = new LayoutParams(popupWindowWidth, LayoutParams.WRAP_CONTENT);
         textParam.addRule(RelativeLayout.CENTER_IN_PARENT);
+        weekText.setId(generateViewId());
         addView(weekText,textParam);
+
+        imageView = new ImageView(getContext());
+        imageView.setImageResource(R.drawable.title_more_reverse);
+        imageParam = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        Log.d("weekText",weekText.getId()+"");
+        imageParam.addRule(RelativeLayout.RIGHT_OF,weekText.getId());
+        imageParam.addRule(RelativeLayout.CENTER_VERTICAL);
+        addView(imageView,imageParam);
 
         rightButton = new Button(context);
         backGroundResource = R.drawable.title_add;
@@ -108,8 +129,10 @@ public class MyTopBarView extends RelativeLayout {
                 context.startActivity(intent);
             }
         });
-        buttomParam = new LayoutParams((int)getResources().getDimension(R.dimen.x80),(int)getResources().getDimension(R.dimen.x80));
+        buttomParam = new LayoutParams((int)getResources().getDimension(R.dimen.x40),(int)getResources().getDimension(R.dimen.x40));
         buttomParam.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        buttomParam.addRule(RelativeLayout.CENTER_VERTICAL);
+        buttomParam.rightMargin = (int)getResources().getDimension(R.dimen.x20);
         addView(rightButton,buttomParam);
     }
 
