@@ -7,8 +7,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.ContextCompat;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.TextAppearanceSpan;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -34,13 +39,13 @@ public class MyTimeTableView extends RelativeLayout {
 
     private String[] DayOfWeek = {"周一","周二","周三","周四","周五","周六","周日"};
     private String[] WeekDay = {"","","","","","",""};
-    private String[] Time = {"早间","8:00\n1","8:55\n2","10:00\n3","10:55\n4","午间","14:30\n5","15:25\n6","16:20\n7",
-                                            "17:15\n8","19:00\n9","19:55\n10","20:50\n11","21:45\n12","晚间"};
+    private String[] Time = {"早间","8:00\n\n1","8:55\n\n2","10:00\n\n3","10:55\n\n4","午间","14:30\n\n5","15:25\n\n6","16:20\n\n7",
+                                            "17:15\n\n8","19:00\n\n9","19:55\n\n10","20:50\n\n11","21:45\n\n12","晚间"};
     int currentWeek;
     MyHorizontalScrollView dateScrollView,tableHorizonScrollView;
     MyScrollView timeScrollView,tableScrollView;
     TableLayout tableLayout,myTimeTable,myDateTable;
-    RelativeLayout tableRelativeLayout;
+    RelativeLayout tableRelativeLayout,myTimeTableRelativeLayout;
     TableRow tableRow;
     int enlargeCol;
     int rowNum,colNum,showColNum,showRowNum;
@@ -76,7 +81,7 @@ public class MyTimeTableView extends RelativeLayout {
 
     public void setWeekDay(String[] WeekDay){
         for(int i=0;i<7;i++){
-            this.WeekDay[i] = DayOfWeek[i] + "\n" + WeekDay[i];
+            this.WeekDay[i] = WeekDay[i];
         }
     }
 
@@ -126,6 +131,21 @@ public class MyTimeTableView extends RelativeLayout {
             }
         });
 
+        TextView headerText = new TextView(getContext());
+        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams((int)getResources().getDimension(R.dimen.x80),(int)getResources().getDimension(R.dimen.y112));
+        rlp.leftMargin = 0;
+        rlp.topMargin = 0;
+        headerText.setLayoutParams(rlp);
+        SpannableString headerString  = new SpannableString("周数\n/\n时间");
+        headerString.setSpan(new TextAppearanceSpan(getContext(),R.style.HeaderTitleStyle1),0,4,Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        headerString.setSpan(new TextAppearanceSpan(getContext(),R.style.HeaderTitleStyle2),4,headerString.length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        headerText.setText(headerString,TextView.BufferType.SPANNABLE);
+        headerText.setTextColor(ContextCompat.getColor(getContext(),R.color.MoyuTextGrey));
+        headerText.setBackgroundResource(R.drawable.biankuang);
+        headerText.setGravity(Gravity.CENTER);
+        myTimeTableRelativeLayout = (RelativeLayout)findViewById(R.id.myTimeTableRelativeLayout);
+        myTimeTableRelativeLayout.addView(headerText);
+
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -142,6 +162,8 @@ public class MyTimeTableView extends RelativeLayout {
                 }
             }
         };
+
+
 
         //insert record test
         new Thread(new Runnable() {
@@ -207,9 +229,9 @@ public class MyTimeTableView extends RelativeLayout {
        * @param enlargeCol define which col to be enlarged
      */
     void drawTable(int week,int enlargeCol){
-        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth*(1-(1/showColNum)),windowHeight*(1-(1/showRowNum)));
-        rlp.leftMargin = windowWidth/showColNum;
-        rlp.topMargin = windowHeight/showRowNum;
+        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth-(int)getResources().getDimension(R.dimen.x80),windowHeight-(int)getResources().getDimension(R.dimen.y112));
+        rlp.leftMargin = (int)getResources().getDimension(R.dimen.x80);
+        rlp.topMargin = (int)getResources().getDimension(R.dimen.y112);
         tableScrollView.setLayoutParams(rlp);
         for(int row=0;row<rowNum;++row){
             tableRow = new TableRow(getContext());
@@ -242,40 +264,48 @@ public class MyTimeTableView extends RelativeLayout {
                     }
                 });
                 if(col == enlargeCol){
-                    tableRow.addView(tv,new TableRow.LayoutParams(2*windowWidth/showColNum,windowHeight/showRowNum,1));
+                    tableRow.addView(tv,new TableRow.LayoutParams((int)getResources().getDimension(R.dimen.x152),(int)getResources().getDimension(R.dimen.y92),1));
                 } else {
-                    tableRow.addView(tv,new TableRow.LayoutParams(windowWidth/colNum,windowHeight/showRowNum,1));
+                    tableRow.addView(tv,new TableRow.LayoutParams((int)getResources().getDimension(R.dimen.x122),(int)getResources().getDimension(R.dimen.y92),1));
                 }
             }
             tableLayout.addView(tableRow);
         }
-//        addItem("有聊",1,1,2,enlargeCol);//Tuesday,from class 1 to class 2
-//        addItem("好有聊",4,3,4,enlargeCol);//Friday, from class 3 to class 4
-//        addItem("超级无敌有聊",2,1,4,enlargeCol);//Wednesday, from class 1 to class 4
         currentWeek = week;
         addEvents(week,enlargeCol);
     }
 
     void drawTimeTable(){
-        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth/colNum,windowHeight*(1-(1/showRowNum)));
-        rlp.topMargin = windowHeight/showRowNum;
+        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams((int)getResources().getDimension(R.dimen.x80),windowHeight-(int)getResources().getDimension(R.dimen.y112));
+        rlp.topMargin = (int)getResources().getDimension(R.dimen.y112);
         rlp.leftMargin = 0;
         timeScrollView.setLayoutParams(rlp);
         for(int row=1;row<=rowNum;++row){
             //Log.d("row",row+"");
             TextView tv = new TextView(getContext());
             TableRow tr = new TableRow(getContext());
-            tv.setText(Time[row-1]);
+            if(row-1 == 0 || row-1 == 5 || row == rowNum){
+                tv.setText(Time[row-1]);
+                tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,getResources().getDimension(R.dimen.y24));
+                tv.setTextColor(ContextCompat.getColor(getContext(),R.color.MoyuTimeGrey));
+            } else {
+                SpannableString timeTitle = new SpannableString(Time[row-1]);
+                timeTitle.setSpan(new TextAppearanceSpan(getContext(),R.style.TimeTitleStyle1),0,5,Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                timeTitle.setSpan(new TextAppearanceSpan(getContext(),R.style.TimeTitleStyle2),5,timeTitle.length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                tv.setText(timeTitle,TextView.BufferType.SPANNABLE);
+                tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,getResources().getDimension(R.dimen.y16));
+            }
+
             tv.setGravity(Gravity.CENTER);
             tv.setBackgroundResource(cellBackGroundResource);
-            tr.addView(tv,new TableRow.LayoutParams(windowWidth/colNum,windowHeight/showRowNum,1));
+            tr.addView(tv,new TableRow.LayoutParams((int)getResources().getDimension(R.dimen.x80),(int)getResources().getDimension(R.dimen.y92),1));
             myTimeTable.addView(tr);
         }
     }
 
     void drawDateTable(int enlargeCol){
-        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth*(1 - (1/colNum)),windowHeight/showRowNum);
-        rlp.leftMargin = windowWidth/colNum;
+        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth-(int)getResources().getDimension(R.dimen.x80),(int)getResources().getDimension(R.dimen.y112));
+        rlp.leftMargin = (int)getResources().getDimension(R.dimen.x80);
         rlp.topMargin = 0;
         dateScrollView.setLayoutParams(rlp);
         TableRow tr = new TableRow(getContext());
@@ -284,8 +314,12 @@ public class MyTimeTableView extends RelativeLayout {
             final int finalCol = col;
             tv.setGravity(Gravity.CENTER);
             tv.setBackgroundResource(cellBackGroundResource);
-
-            tv.setText(WeekDay[col]);
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,getResources().getDimension(R.dimen.y32));
+            //tv.setText(DayOfWeek[col]);
+            SpannableString dateTitle = new SpannableString(DayOfWeek[col]+"\n\n"+WeekDay[col]);
+            dateTitle.setSpan(new TextAppearanceSpan(getContext(),R.style.DateTitleStyle1),0,3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            dateTitle.setSpan(new TextAppearanceSpan(getContext(),R.style.DateTitleStyle2),3,dateTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            tv.setText(dateTitle,TextView.BufferType.SPANNABLE);
             //Log.d("date", WeekDay[col]);
             tv.setOnClickListener(new OnClickListener() {
                 @Override
@@ -299,21 +333,24 @@ public class MyTimeTableView extends RelativeLayout {
             });
 
             if(col == enlargeCol){
-                tr.addView(tv,new TableRow.LayoutParams(2*windowWidth/colNum,windowHeight/showRowNum,1));
+                tv.setTextColor(ContextCompat.getColor(getContext(),R.color.MoyuGreen));
+                tr.addView(tv,new TableRow.LayoutParams((int)getResources().getDimension(R.dimen.x152),(int)getResources().getDimension(R.dimen.y112),1));
             } else {
-                tr.addView(tv,new TableRow.LayoutParams(windowWidth/colNum,windowHeight/showRowNum,1));
+                tv.setTextColor(ContextCompat.getColor(getContext(),R.color.MoyuTextGrey));
+                tr.addView(tv,new TableRow.LayoutParams((int)getResources().getDimension(R.dimen.x122),(int)getResources().getDimension(R.dimen.y112),1));
             }
         }
         myDateTable.addView(tr);
+
     }
 
-    void addItem(String text, int date, int start, int end, int enlargeCol){
+    void addItem(String text, int date, int start, int end, int enlargeCol, int backGroundId){
         TextView info = new TextView(getContext());
         final int finalDate = date;
         final String finalText = text;
         textViewVector.add(info);
         info.setText(text);
-        info.setBackgroundResource(cellBackGroundResource);
+        info.setBackgroundResource(backGroundId);
         info.setGravity(Gravity.CENTER);
         info.setOnClickListener(new OnClickListener() {
             @Override
@@ -325,26 +362,27 @@ public class MyTimeTableView extends RelativeLayout {
                 handler.sendMessage(msg);
             }
         });
-        int w,itemHeight,wEnlarge,itemWidth;
-        w = windowWidth/colNum;
-        info.setTextSize((w-16)/6);
-        wEnlarge = 2*windowWidth/colNum;
-        itemHeight = windowHeight/showRowNum;
+        int itemHeight,itemWidth;
+        info.setTextSize(TypedValue.COMPLEX_UNIT_PX,getResources().getDimension(R.dimen.y26));
+        itemHeight = (int)getResources().getDimension(R.dimen.y82);
         if(date == enlargeCol){
-            itemWidth = wEnlarge;
+            itemWidth = (int)getResources().getDimension(R.dimen.x140);
         } else {
-            itemWidth = w;
+            itemWidth = (int)getResources().getDimension(R.dimen.x112);
         }
-        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(itemWidth,itemHeight*(end-start+1));
-        rlp.topMargin = itemHeight * start;
-        rlp.leftMargin = date*w;
+        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(itemWidth,itemHeight*(end-start+1) + (int)getResources().getDimension(R.dimen.y10)*(end-start));
+        rlp.topMargin = (int)getResources().getDimension(R.dimen.y5) + (itemHeight + (int)getResources().getDimension(R.dimen.y10)) * start;
+        rlp.leftMargin = (int)getResources().getDimension(R.dimen.x5) + date*(int)getResources().getDimension(R.dimen.x122);
         if(date > enlargeCol){
-            rlp.leftMargin = (date-1)*w + wEnlarge;
+            rlp.leftMargin = (int)getResources().getDimension(R.dimen.x5) + (date-1)*(int)getResources().getDimension(R.dimen.x122) + (int)getResources().getDimension(R.dimen.x150);
         }
         info.setLayoutParams(rlp);
         tableRelativeLayout.addView(info);
     }
 
+    /**
+     * remove all table, need to be call when redraw the table
+     */
     void cleanAllTable(){
         tableLayout.removeAllViews();
         myDateTable.removeAllViews();
@@ -422,7 +460,7 @@ public class MyTimeTableView extends RelativeLayout {
                         }
                     }
                     if(noConflict){
-                        addItem(course.course_name+"\n@"+course.classroom,course.day_of_week,startTime,endTime,enlargeCol);
+                        addItem(course.course_name+"\n@"+course.classroom,course.day_of_week,startTime,endTime,enlargeCol,R.drawable.course);
                     } else {
                         Log.d("add item conflit",startTime + "-" + endTime);
                     }
@@ -480,10 +518,10 @@ public class MyTimeTableView extends RelativeLayout {
                         }
                     }
                     if(noConflict == 1){
-                        addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol);
+                        addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol,R.drawable.affair);
                     } else if(noConflict == 2){//have both course and affair
                         //TODO: change background when we have both course and affair
-                        addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol);
+                        addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol,R.drawable.conflict);
                     } else {
                         Log.d("add item conflit",startTime + "-" + endTime);
                     }
@@ -637,10 +675,10 @@ public class MyTimeTableView extends RelativeLayout {
                                 }
                             }
                             if(noConflict == 1){
-                                addItem(affair.description,day_of_week,startTime,endTime,enlargeCol);
+                                addItem(affair.description,day_of_week,startTime,endTime,enlargeCol,R.drawable.affair);
                             } else if(noConflict == 2){//have both course and affair
                                 //TODO: change background when we have both course and affair
-                                addItem(affair.description,day_of_week,startTime,endTime,enlargeCol);
+                                addItem(affair.description,day_of_week,startTime,endTime,enlargeCol,R.drawable.conflict);
                             } else {
                                 Log.d("add item conflit",startTime + "-" + endTime);
                             }

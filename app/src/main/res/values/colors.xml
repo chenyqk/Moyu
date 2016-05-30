@@ -3,4 +3,10 @@
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#000000</color>
+    <color name="MoyuTextGrey">#bab9bf</color>
+    <color name="MoyuTimeGrey">#bcbcbf</color>
+    <color name="MoyuWeekGrey">#bbbabf</color>
+    <color name="MoyuNumGrey">#686868</color>
+    <color name="MoyuGreen">#2dcd97</color>
+    <color name="MoyuWhite">#FFFFFF</color>
 </resources>

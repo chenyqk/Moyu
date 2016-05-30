@@ -9,4 +9,28 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
+    <style name="DateTitleStyle1">
+        <item name="android:textSize">@dimen/y32</item>
+    </style>
+
+    <style name="DateTitleStyle2">
+        <item name="android:textSize">@dimen/y20</item>
+    </style>
+
+    <style name="TimeTitleStyle1">
+        <item name="android:textColor">@color/MoyuTimeGrey</item>
+    </style>
+
+    <style name="TimeTitleStyle2">
+        <item name="android:textColor">@color/MoyuNumGrey</item>
+    </style>
+
+    <style name="HeaderTitleStyle1">
+        <item name="android:textSize">@dimen/y20</item>
+    </style>
+
+    <style name="HeaderTitleStyle2">
+        <item name="android:textSize">@dimen/y16</item>
+    </style>
+
 </resources>

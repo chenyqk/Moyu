@@ -9,12 +9,10 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
-import android.widget.TextView;
 
 public class MainActivity extends ActivityGroup {
 
     private TabHost tabHost = null;
-    private Intent dbService = null;
 
 
     @Override
@@ -26,34 +24,63 @@ public class MainActivity extends ActivityGroup {
         tabHost = (TabHost)findViewById(R.id.tabHost);
         tabHost.setup(getLocalActivityManager());
 
-        initeTabhost(this,"ScheduleFragment",R.string.title_schedule_fragment_activity,R.color.button_material_light,
-                R.mipmap.ic_launcher,new Intent(MainActivity.this,ScheduleFragment.class),tabHost);
-        initeTabhost(this,"GroupFragment",R.string.title_group_fragment_activity,R.color.button_material_light,
-                R.mipmap.ic_launcher,new Intent(MainActivity.this,GroupFragment.class),tabHost);
-        initeTabhost(this,"AboutmeFragment",R.string.title_aboutme_fragment_activity,R.color.button_material_light,
-                R.mipmap.ic_launcher,new Intent(MainActivity.this,AboutmeFragment.class),tabHost);
+        initeTabhost(this,"ScheduleFragment",R.color.MoyuWhite,
+                R.drawable.date1,new Intent(MainActivity.this,ScheduleFragment.class),tabHost);
+        initeTabhost(this,"GroupFragment",R.color.MoyuWhite,
+                R.drawable.me,new Intent(MainActivity.this,GroupFragment.class),tabHost);
+        initeTabhost(this,"AboutmeFragment",R.color.MoyuWhite,
+                R.drawable.people,new Intent(MainActivity.this,AboutmeFragment.class),tabHost);
 
         tabHost.setCurrentTab(0);
+        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String tabId) {
+                switch (tabHost.getCurrentTab()){
+                    case 0:{
+                        ImageView tmp1 = (ImageView) tabHost.getTabWidget().getChildAt(0).findViewById(R.id.icon);
+                        tmp1.setImageResource(R.drawable.date1);
+                        tmp1 = (ImageView) tabHost.getTabWidget().getChildAt(1).findViewById(R.id.icon);
+                        tmp1.setImageResource(R.drawable.me);
+                        tmp1 = (ImageView) tabHost.getTabWidget().getChildAt(2).findViewById(R.id.icon);
+                        tmp1.setImageResource(R.drawable.people);
+                        break;
+                    }
+                    case 1:{
+                        ImageView tmp1 = (ImageView) tabHost.getTabWidget().getChildAt(0).findViewById(R.id.icon);
+                        tmp1.setImageResource(R.drawable.date);
+                        tmp1 = (ImageView) tabHost.getTabWidget().getChildAt(1).findViewById(R.id.icon);
+                        tmp1.setImageResource(R.drawable.me1);
+                        tmp1 = (ImageView) tabHost.getTabWidget().getChildAt(2).findViewById(R.id.icon);
+                        tmp1.setImageResource(R.drawable.people);
+                        break;
+                    }
+                    case 2:{
+                        ImageView tmp1 = (ImageView) tabHost.getTabWidget().getChildAt(0).findViewById(R.id.icon);
+                        tmp1.setImageResource(R.drawable.date);
+                        tmp1 = (ImageView) tabHost.getTabWidget().getChildAt(1).findViewById(R.id.icon);
+                        tmp1.setImageResource(R.drawable.me);
+                        tmp1 = (ImageView) tabHost.getTabWidget().getChildAt(2).findViewById(R.id.icon);
+                        tmp1.setImageResource(R.drawable.people1);
+                        break;
+                    }
+                }
+            }
+        });
 
-        //dbService = new Intent(MainActivity.this,DataBaseService.class);
-        //startService(dbService);
     }
 
     /**
      * initalize the tab
      * @param context
      * @param tabId
-     * @param name
      * @param backgroundId
      * @param intent
      * @param tabHost
      */
-    private void initeTabhost(Context context, String tabId, int name, int backgroundId, int iconId, Intent intent, TabHost tabHost){
+    private void initeTabhost(Context context, String tabId, int backgroundId, int iconId, Intent intent, TabHost tabHost){
         LinearLayout tab=(LinearLayout) LayoutInflater.from(context).inflate(R.layout.labelview, null);
         ImageView icon1=(ImageView)tab.findViewById(R.id.icon);
-        icon1.setBackgroundResource(iconId);
-        TextView title1=(TextView)tab.findViewById(R.id.title);
-        title1.setText(getString(name));
+        icon1.setImageResource(iconId);
         tab.setBackgroundResource(backgroundId);
         TabHost.TabSpec ts1 = tabHost.newTabSpec(tabId);
         ts1.setIndicator(tab);//set the content of each tab
@@ -64,8 +91,5 @@ public class MainActivity extends ActivityGroup {
     @Override
     public void onDestroy(){
         super.onDestroy();
-//        if(dbService != null){
-//            stopService(dbService);
-//        }
     }
 }
