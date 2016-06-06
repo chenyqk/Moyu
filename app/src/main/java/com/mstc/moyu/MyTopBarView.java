@@ -65,6 +65,7 @@ public class MyTopBarView extends RelativeLayout {
             public void onClick(View v) {
                 final PopupWindow popupWindow = new PopupWindow(popupWindowWidth,popupWindowHeight);
                 View contentView = LayoutInflater.from(context).inflate(R.layout.layout_popupwindow,null);
+                contentView.setBackgroundResource(R.drawable.round_corner);
                 popupWindow.setContentView(contentView);
                 ListView listView = (ListView)contentView.findViewById(R.id.listView);
                 imageView.setImageResource(R.drawable.title_more);

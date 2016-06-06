@@ -49,7 +49,6 @@ public class MyTimeTableView extends RelativeLayout {
     TableRow tableRow;
     int enlargeCol;
     int rowNum,colNum,showColNum,showRowNum;
-    int cellBackGroundResource;
     int windowWidth,windowHeight;
     private final int FOCUS_CHANGED = 233;
     Vector<TextView> textViewVector;
@@ -91,7 +90,6 @@ public class MyTimeTableView extends RelativeLayout {
         colNum = 7;
         showRowNum = 11;
         showColNum = 7;
-        cellBackGroundResource = R.drawable.biankuang;
         textViewVector = new Vector<>();
         currentWeek = 0;
         inflate(context,R.layout.my_time_table_view,this);
@@ -141,7 +139,7 @@ public class MyTimeTableView extends RelativeLayout {
         headerString.setSpan(new TextAppearanceSpan(getContext(),R.style.HeaderTitleStyle2),4,headerString.length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         headerText.setText(headerString,TextView.BufferType.SPANNABLE);
         headerText.setTextColor(ContextCompat.getColor(getContext(),R.color.MoyuTextGrey));
-        headerText.setBackgroundResource(R.drawable.biankuang);
+        headerText.setBackgroundResource(R.drawable.shu_122);
         headerText.setGravity(Gravity.CENTER);
         myTimeTableRelativeLayout = (RelativeLayout)findViewById(R.id.myTimeTableRelativeLayout);
         myTimeTableRelativeLayout.addView(headerText);
@@ -239,7 +237,6 @@ public class MyTimeTableView extends RelativeLayout {
                 TextView tv = new TextView(getContext());
                 tv.setText("");
                 tv.setGravity(Gravity.CENTER);
-                tv.setBackgroundResource(cellBackGroundResource);
                 final int finalCol = col;
                 final int finalRow = row;
                 tv.setOnClickListener(new OnClickListener() {
@@ -264,8 +261,10 @@ public class MyTimeTableView extends RelativeLayout {
                     }
                 });
                 if(col == enlargeCol){
+                    tv.setBackgroundResource(R.drawable.heng_152);
                     tableRow.addView(tv,new TableRow.LayoutParams((int)getResources().getDimension(R.dimen.x152),(int)getResources().getDimension(R.dimen.y92),1));
                 } else {
+                    tv.setBackgroundResource(R.drawable.heng_122);
                     tableRow.addView(tv,new TableRow.LayoutParams((int)getResources().getDimension(R.dimen.x122),(int)getResources().getDimension(R.dimen.y92),1));
                 }
             }
@@ -297,7 +296,7 @@ public class MyTimeTableView extends RelativeLayout {
             }
 
             tv.setGravity(Gravity.CENTER);
-            tv.setBackgroundResource(cellBackGroundResource);
+            tv.setBackgroundResource(R.drawable.heng_122);
             tr.addView(tv,new TableRow.LayoutParams((int)getResources().getDimension(R.dimen.x80),(int)getResources().getDimension(R.dimen.y92),1));
             myTimeTable.addView(tr);
         }
@@ -313,7 +312,6 @@ public class MyTimeTableView extends RelativeLayout {
             TextView tv = new TextView(getContext());
             final int finalCol = col;
             tv.setGravity(Gravity.CENTER);
-            tv.setBackgroundResource(cellBackGroundResource);
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,getResources().getDimension(R.dimen.y32));
             //tv.setText(DayOfWeek[col]);
             SpannableString dateTitle = new SpannableString(DayOfWeek[col]+"\n\n"+WeekDay[col]);
@@ -333,9 +331,11 @@ public class MyTimeTableView extends RelativeLayout {
             });
 
             if(col == enlargeCol){
+                tv.setBackgroundResource(R.drawable.shu_152);
                 tv.setTextColor(ContextCompat.getColor(getContext(),R.color.MoyuGreen));
                 tr.addView(tv,new TableRow.LayoutParams((int)getResources().getDimension(R.dimen.x152),(int)getResources().getDimension(R.dimen.y112),1));
             } else {
+                tv.setBackgroundResource(R.drawable.shu_122);
                 tv.setTextColor(ContextCompat.getColor(getContext(),R.color.MoyuTextGrey));
                 tr.addView(tv,new TableRow.LayoutParams((int)getResources().getDimension(R.dimen.x122),(int)getResources().getDimension(R.dimen.y112),1));
             }
