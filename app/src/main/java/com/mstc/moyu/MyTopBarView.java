@@ -33,9 +33,10 @@ public class MyTopBarView extends RelativeLayout {
     private ImageView imageView;
     private int backGroundResource;
     private String[] fiveWeekStr;
+    private OnClickListener onClickListener;
     int currentWeek;
-    int popupWindowWidth = (int)getResources().getDimension(R.dimen.x250);
-    int popupWindowHeight = (int)getResources().getDimension(R.dimen.y220);
+    int popupWindowWidth = (int)getResources().getDimension(R.dimen.x254);
+    int popupWindowHeight = (int)getResources().getDimension(R.dimen.y288);
 
     private LayoutParams textParam,buttomParam,imageParam;
 
@@ -58,11 +59,8 @@ public class MyTopBarView extends RelativeLayout {
         weekText = new TextView(context);
         weekStr = "（本周）第1周";
         currentWeek = 0;
-        weekText.setText(weekStr);
-        weekText.setTextColor(ContextCompat.getColor(getContext(),R.color.MoyuGreen));
-        weekText.setTextSize(TypedValue.COMPLEX_UNIT_PX,getResources().getDimension(R.dimen.y32));
-        weekText.setGravity(Gravity.CENTER);
-        weekText.setOnClickListener(new OnClickListener() {
+
+        onClickListener = new OnClickListener() {
             @Override
             public void onClick(View v) {
                 final PopupWindow popupWindow = new PopupWindow(popupWindowWidth,popupWindowHeight);
@@ -96,7 +94,7 @@ public class MyTopBarView extends RelativeLayout {
                 popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
                 popupWindow.setOutsideTouchable(true);
 
-                popupWindow.showAsDropDown(v,0,0);
+                popupWindow.showAsDropDown(weekText,0,0);
                 popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
                     @Override
                     public void onDismiss() {
@@ -104,7 +102,13 @@ public class MyTopBarView extends RelativeLayout {
                     }
                 });
             }
-        });
+        };
+
+        weekText.setText(weekStr);
+        weekText.setTextColor(ContextCompat.getColor(getContext(),R.color.MoyuGreen));
+        weekText.setTextSize(TypedValue.COMPLEX_UNIT_PX,getResources().getDimension(R.dimen.y32));
+        weekText.setGravity(Gravity.CENTER);
+        weekText.setOnClickListener(onClickListener);
         textParam = new LayoutParams(popupWindowWidth, LayoutParams.WRAP_CONTENT);
         textParam.addRule(RelativeLayout.CENTER_IN_PARENT);
         weekText.setId(generateViewId());
@@ -112,6 +116,7 @@ public class MyTopBarView extends RelativeLayout {
 
         imageView = new ImageView(getContext());
         imageView.setImageResource(R.drawable.title_more_reverse);
+        imageView.setOnClickListener(onClickListener);
         imageParam = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         Log.d("weekText",weekText.getId()+"");
@@ -132,7 +137,7 @@ public class MyTopBarView extends RelativeLayout {
         buttomParam = new LayoutParams((int)getResources().getDimension(R.dimen.x40),(int)getResources().getDimension(R.dimen.x40));
         buttomParam.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         buttomParam.addRule(RelativeLayout.CENTER_VERTICAL);
-        buttomParam.rightMargin = (int)getResources().getDimension(R.dimen.x20);
+        buttomParam.rightMargin = (int)getResources().getDimension(R.dimen.x42);
         addView(rightButton,buttomParam);
     }
 

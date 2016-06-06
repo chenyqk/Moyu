@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Moyu</string>
+    <string name="app_name">墨鱼仔</string>
     <string name="title_schedule_fragment_activity">日程</string>
     <string name="title_group_fragment_activity">群组</string>
     <string name="title_aboutme_fragment_activity">我的</string>
