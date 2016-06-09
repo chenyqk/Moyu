@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
@@ -342,7 +343,17 @@ public class MyTimeTableView extends RelativeLayout {
 
     }
 
-    void addItem(String text, int date, int start, int end, int enlargeCol, int backGroundId){
+    /**
+     *  add an item(course or affair)
+     * @param text
+     * @param date
+     * @param start
+     * @param end
+     * @param enlargeCol
+     * @param backGroundId
+     * @param item
+     */
+    void addItem(String text, int date, int start, int end, int enlargeCol, final int backGroundId,final Object item){
         TextView info = new TextView(getContext());
         final int finalDate = date;
         final String finalText = text;
@@ -364,8 +375,34 @@ public class MyTimeTableView extends RelativeLayout {
         info.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Intent intent = new Intent(getContext(),AddItemActivity.class);
-                getContext().startActivity(intent);
+                switch (backGroundId){
+                    case R.drawable.course:{
+                        Intent intent = new Intent();
+                        intent.setClass(getContext(),AddItemActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean("IS_COURSE",true);
+                        bundle.putSerializable("COURSE",(Course)item);
+                        intent.putExtras(bundle);
+                        getContext().startActivity(intent);
+                        break;
+                    }
+                    case R.drawable.affair:{
+                        Intent intent = new Intent();
+                        intent.setClass(getContext(),AddItemActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean("IS_COURSE",false);
+                        bundle.putSerializable("AFFAIR",(Affair)item);
+                        intent.putExtras(bundle);
+                        getContext().startActivity(intent);
+                        break;
+                    }
+                    case R.drawable.conflict:{
+                        break;
+                    }
+                    default:{
+                        break;
+                    }
+                }
                 return false;
             }
         });
@@ -468,7 +505,7 @@ public class MyTimeTableView extends RelativeLayout {
                         }
                     }
                     if(noConflict){
-                        addItem(course.course_name+"\n@"+course.classroom,course.day_of_week,startTime,endTime,enlargeCol,R.drawable.course);
+                        addItem(course.course_name+"\n@"+course.classroom,course.day_of_week,startTime,endTime,enlargeCol,R.drawable.course,course);
                     } else {
                         Log.d("add item conflit",startTime + "-" + endTime);
                     }
@@ -526,10 +563,10 @@ public class MyTimeTableView extends RelativeLayout {
                         }
                     }
                     if(noConflict == 1){
-                        addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol,R.drawable.affair);
+                        addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol,R.drawable.affair,affair);
                     } else if(noConflict == 2){//have both course and affair
                         //TODO: change background when we have both course and affair
-                        addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol,R.drawable.conflict);
+                        addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol,R.drawable.conflict,affair);
                     } else {
                         Log.d("add item conflit",startTime + "-" + endTime);
                     }
@@ -683,10 +720,10 @@ public class MyTimeTableView extends RelativeLayout {
                                 }
                             }
                             if(noConflict == 1){
-                                addItem(affair.description,day_of_week,startTime,endTime,enlargeCol,R.drawable.affair);
+                                addItem(affair.description,day_of_week,startTime,endTime,enlargeCol,R.drawable.affair,affair);
                             } else if(noConflict == 2){//have both course and affair
                                 //TODO: change background when we have both course and affair
-                                addItem(affair.description,day_of_week,startTime,endTime,enlargeCol,R.drawable.conflict);
+                                addItem(affair.description,day_of_week,startTime,endTime,enlargeCol,R.drawable.conflict,affair);
                             } else {
                                 Log.d("add item conflit",startTime + "-" + endTime);
                             }

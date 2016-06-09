@@ -1,11 +1,12 @@
 package com.mstc.db;
 
+import java.io.Serializable;
 import java.util.Vector;
 
 /**
  * Created by Administrator on 2016/5/17.
  */
-public class Affair {
+public class Affair implements Serializable{
     public String description ;
     public String comment ;
     public int week ;
