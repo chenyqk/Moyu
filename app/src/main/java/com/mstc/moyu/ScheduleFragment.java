@@ -26,8 +26,8 @@ public class ScheduleFragment extends Activity {
     private ViewTreeObserver vto = null;
     boolean hasMeasured = false;
     int windowWidth,windowHeight;
-    int currentWeek;
-    Date today;
+    int currentWeek,showWeek;
+    Date today,day;
     Calendar c;
 
     @Override
@@ -55,7 +55,7 @@ public class ScheduleFragment extends Activity {
                     myTimeTableView.setWeekDay(getWeekDay(today));
                     myTimeTableView.drawTimeTable();
                     myTimeTableView.drawDateTable(getDayOfWeek(today));
-                    myTimeTableView.drawTable(getDayOfWeek(today));
+                    myTimeTableView.drawTable(currentWeek,getDayOfWeek(today));
                 }
                 return true;
             }
@@ -69,13 +69,14 @@ public class ScheduleFragment extends Activity {
                     Log.d("Reciever","2");
                     Bundle bundle = intent.getExtras();
                     c.setTime(today);
-                    c.add(Calendar.DATE,7*(bundle.getInt("SHOW_WEEK") - currentWeek));
-                    Date day = c.getTime();
+                    showWeek = bundle.getInt("SHOW_WEEK");
+                    c.add(Calendar.DATE,7*(showWeek - currentWeek));
+                    day = c.getTime();
                     myTimeTableView.cleanAllTable();
                     myTimeTableView.setWeekDay(getWeekDay(day));
                     myTimeTableView.drawTimeTable();
                     myTimeTableView.drawDateTable(getDayOfWeek(day));
-                    myTimeTableView.drawTable(getDayOfWeek(day));
+                    myTimeTableView.drawTable(showWeek,getDayOfWeek(day));
                 }
             }
         };
