@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
@@ -313,16 +314,13 @@ public class MyTimeTableView extends RelativeLayout {
             final int finalCol = col;
             tv.setGravity(Gravity.CENTER);
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,getResources().getDimension(R.dimen.y32));
-            //tv.setText(DayOfWeek[col]);
             SpannableString dateTitle = new SpannableString(DayOfWeek[col]+"\n\n"+WeekDay[col]);
             dateTitle.setSpan(new TextAppearanceSpan(getContext(),R.style.DateTitleStyle1),0,3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             dateTitle.setSpan(new TextAppearanceSpan(getContext(),R.style.DateTitleStyle2),3,dateTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             tv.setText(dateTitle,TextView.BufferType.SPANNABLE);
-            //Log.d("date", WeekDay[col]);
             tv.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Log.d("Touched", WeekDay[finalCol]);
                     Message msg = new Message();
                     msg.what = FOCUS_CHANGED;
                     msg.obj = finalCol;
@@ -373,6 +371,7 @@ public class MyTimeTableView extends RelativeLayout {
         });
         int itemHeight,itemWidth;
         info.setTextSize(TypedValue.COMPLEX_UNIT_PX,getResources().getDimension(R.dimen.y26));
+        info.setTextColor(Color.WHITE);
         itemHeight = (int)getResources().getDimension(R.dimen.y82);
         if(date == enlargeCol){
             itemWidth = (int)getResources().getDimension(R.dimen.x140);
