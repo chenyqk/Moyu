@@ -1,11 +1,12 @@
 package com.mstc.db;
 
+import java.io.Serializable;
 import java.util.Vector;
 
 /**
  * Created by Administrator on 2016/5/17.
  */
-public class Course {
+public class Course implements Serializable{
     public String course_name;
     public String classroom;
     public int week;
