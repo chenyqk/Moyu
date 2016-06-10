@@ -177,7 +177,7 @@ public class MyTimeTableView extends RelativeLayout {
                 DataBaseFactory.ClearCourseTable(dataBaseHelper);
                 DataBaseFactory.ClearDeletedRepeatAffairTable(dataBaseHelper);
                 SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-                Course course = new Course("高等数学","340201",1,2,"2016-05-25","1,2,6,7");//第二周,周三,1-2,5-6节课(午间，有1个单位的偏移)
+                Course course = new Course("高等数学","340201",0,2,"2016-05-25","1,2,6,7");//第一周,周三,1-2,5-6节课(午间，有1个单位的偏移)
                 String[] projection = {MoyuContract.CourseEntry.COURSE_NAME,MoyuContract.CourseEntry.CLASSROOM};
                 String selection = MoyuContract.CourseEntry.COURSE_NAME + " LIKE ?";
                 String[] selectionArgs = {course.course_name};
@@ -188,7 +188,7 @@ public class MyTimeTableView extends RelativeLayout {
                 }
                 cursor.close();
                 //non-repeat affair
-                Affair affair1 = new Affair("打羽毛球","和小雅打羽毛球",2,3,"2016-06-02","0,1,2,3",-1,"0000000");//第三周，周四，早间和1-3节课
+                Affair affair1 = new Affair("打羽毛球","和小雅打羽毛球",1,3,"2016-06-02","0,1,2,3",-1,"0000000");//第一周，周四，早间和1-3节课
                 projection[0] = MoyuContract.AffairEntry.DESCRIPTION;
                 projection[1] = MoyuContract.AffairEntry.DATE;
                 selection = MoyuContract.AffairEntry.DESCRIPTION + " LIKE ?";
@@ -212,7 +212,7 @@ public class MyTimeTableView extends RelativeLayout {
                 }
                 cursor.close();
                 //delete repeat affair
-                Affair affair3 = new Affair("跑步","西区运动场",2,3,"2016-06-02","14",5,"0000000");//每工作日，晚间，6月2晚暂停跑步
+                Affair affair3 = new Affair("跑步","西区运动场",2,3,"2016-06-02","14",5,"0000000");//每工作日，晚间，第三周周四暂停跑步
                 projection[0] = MoyuContract.DeletedRepeatAffairEntry.DESCRIPTION;
                 projection[1] = MoyuContract.DeletedRepeatAffairEntry.DATE;
                 selection = MoyuContract.DeletedRepeatAffairEntry.DESCRIPTION + " LIKE ?";
@@ -224,7 +224,7 @@ public class MyTimeTableView extends RelativeLayout {
                 }
                 cursor.close();
                 //insert conflict
-                Affair affair4 = new Affair("逛街","和小雅逛街",1,2,"2016-05-25","1,2",-1,"0000000");
+                Affair affair4 = new Affair("逛街","和小雅逛街",0,2,"2016-05-25","1,2",-1,"0000000");
                 projection[0] = MoyuContract.AffairEntry.DESCRIPTION;
                 projection[1] = MoyuContract.AffairEntry.DATE;
                 selection = MoyuContract.AffairEntry.DESCRIPTION + " LIKE ?";
@@ -415,11 +415,17 @@ public class MyTimeTableView extends RelativeLayout {
                     case R.drawable.conflict:{
                         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
                         View detailView = layoutInflater.inflate(R.layout.detail_view,null);
+                        final AlertDialog alertDialog = new AlertDialog.Builder(getContext()).setView(detailView).create();
+                        alertDialog.getWindow().setBackgroundDrawableResource(R.color.Transparent);
+
                         TextView affairDetail = (TextView)detailView.findViewById(R.id.affairDetail);
                         TextView courseDetail = (TextView)detailView.findViewById(R.id.courseDetail);
                         final Affair affair = (Affair)item;
                         final Course course = (Course)item2;
-                        affairDetail.setText(affair.description);
+                        affairDetail.setText(affair.description+"\n\n"+
+                                (affair.week+1)+"周\n\n"+
+                                DayOfWeek[affair.day_of_week]+" "+affair.time+"节\n\n"
+                        );
                         affairDetail.setWidth((int)getResources().getDimension(R.dimen.x258));
                         affairDetail.setHeight((int)getResources().getDimension(R.dimen.y400));
                         affairDetail.setOnClickListener(new OnClickListener() {
@@ -432,9 +438,14 @@ public class MyTimeTableView extends RelativeLayout {
                                 bundle.putSerializable("AFFAIR",affair);
                                 intent.putExtras(bundle);
                                 getContext().startActivity(intent);
+                                alertDialog.dismiss();
                             }
                         });
-                        courseDetail.setText(course.course_name);
+                        courseDetail.setText(course.course_name+"\n\n"+
+                                (course.week+1)+"周\n\n"+
+                                DayOfWeek[course.day_of_week]+" "+course.time+"节\n\n"+
+                                course.course_name
+                        );
                         courseDetail.setWidth((int)getResources().getDimension(R.dimen.x258));
                         courseDetail.setHeight((int)getResources().getDimension(R.dimen.y400));
                         courseDetail.setOnClickListener(new OnClickListener() {
@@ -447,10 +458,9 @@ public class MyTimeTableView extends RelativeLayout {
                                 bundle.putSerializable("COURSE",course);
                                 intent.putExtras(bundle);
                                 getContext().startActivity(intent);
+                                alertDialog.dismiss();
                             }
                         });
-                        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).setView(detailView).create();
-                        alertDialog.getWindow().setBackgroundDrawableResource(R.color.Transparent);
                         alertDialog.show();
                         break;
                     }

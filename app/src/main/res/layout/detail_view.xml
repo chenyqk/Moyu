@@ -11,6 +11,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textColor="@android:color/white"
             android:background="@drawable/affair_detail"/>
 
         <TextView
@@ -20,6 +21,7 @@
             android:layout_toRightOf="@+id/affairDetail"
             android:layout_marginLeft="@dimen/x56"
             android:gravity="center"
+            android:textColor="@android:color/white"
             android:background="@drawable/course_detail"/>
 
 
