@@ -70,7 +70,7 @@ public class MyTopBarView extends RelativeLayout {
         onClickListener = new OnClickListener() {
             @Override
             public void onClick(View v) {
-                popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.invisible));
+                //popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.invisible));
                 ListView listView = (ListView)contentView.findViewById(R.id.listView);
                 imageView.setImageResource(R.drawable.title_more_reverse);
                 for(int i=0;i<20;++i){

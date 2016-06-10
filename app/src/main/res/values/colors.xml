@@ -9,4 +9,5 @@
     <color name="MoyuNumGrey">#686868</color>
     <color name="MoyuGreen">#2dcd97</color>
     <color name="MoyuWhite">#FFFFFF</color>
+    <color name="Transparent">#00000000</color>
 </resources>

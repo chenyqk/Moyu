@@ -61,4 +61,9 @@
         <item name="android:textColor">@color/MoyuTextGrey</item>
         <item name="android:visibility">visible</item>
     </style>
+
+    <style name="alertDialog" parent="AlertDialog.AppCompat">
+        <item name="android:windowBackground">@android:color/transparent</item>
+
+    </style>
 </resources>

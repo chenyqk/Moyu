@@ -1,5 +1,6 @@
 package com.mstc.moyu;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,6 +10,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -17,6 +19,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
@@ -220,6 +223,19 @@ public class MyTimeTableView extends RelativeLayout {
                     DataBaseFactory.InsertDeletedRepeatAffair(dataBaseHelper,affair3);
                 }
                 cursor.close();
+                //insert conflict
+                Affair affair4 = new Affair("逛街","和小雅逛街",1,2,"2016-05-25","1,2",-1,"0000000");
+                projection[0] = MoyuContract.AffairEntry.DESCRIPTION;
+                projection[1] = MoyuContract.AffairEntry.DATE;
+                selection = MoyuContract.AffairEntry.DESCRIPTION + " LIKE ?";
+                selectionArgs[0] = affair4.description;
+                cursor = db.query(MoyuContract.AffairEntry.TABLE_NAME,projection,selection,selectionArgs,null,null,null);
+                Log.d("sql","insert conflict affair : " + cursor.getCount());
+                if(cursor.getCount() == 0){
+                    Log.d("sql","insert conflict affair~");
+                    DataBaseFactory.InsertAffair(dataBaseHelper,affair4);
+                }
+                cursor.close();
             }
         }).start();
 
@@ -353,7 +369,7 @@ public class MyTimeTableView extends RelativeLayout {
      * @param backGroundId
      * @param item
      */
-    void addItem(String text, int date, int start, int end, int enlargeCol, final int backGroundId,final Object item){
+    void addItem(String text, int date, int start, int end, int enlargeCol, final int backGroundId, final Object item, @Nullable final Object item2){
         TextView info = new TextView(getContext());
         final int finalDate = date;
         final String finalText = text;
@@ -397,6 +413,45 @@ public class MyTimeTableView extends RelativeLayout {
                         break;
                     }
                     case R.drawable.conflict:{
+                        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+                        View detailView = layoutInflater.inflate(R.layout.detail_view,null);
+                        TextView affairDetail = (TextView)detailView.findViewById(R.id.affairDetail);
+                        TextView courseDetail = (TextView)detailView.findViewById(R.id.courseDetail);
+                        final Affair affair = (Affair)item;
+                        final Course course = (Course)item2;
+                        affairDetail.setText(affair.description);
+                        affairDetail.setWidth((int)getResources().getDimension(R.dimen.x258));
+                        affairDetail.setHeight((int)getResources().getDimension(R.dimen.y400));
+                        affairDetail.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent();
+                                intent.setClass(getContext(),AddItemActivity.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putBoolean("IS_COURSE",false);
+                                bundle.putSerializable("AFFAIR",affair);
+                                intent.putExtras(bundle);
+                                getContext().startActivity(intent);
+                            }
+                        });
+                        courseDetail.setText(course.course_name);
+                        courseDetail.setWidth((int)getResources().getDimension(R.dimen.x258));
+                        courseDetail.setHeight((int)getResources().getDimension(R.dimen.y400));
+                        courseDetail.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent();
+                                intent.setClass(getContext(),AddItemActivity.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putBoolean("IS_COURSE",true);
+                                bundle.putSerializable("COURSE",course);
+                                intent.putExtras(bundle);
+                                getContext().startActivity(intent);
+                            }
+                        });
+                        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).setView(detailView).create();
+                        alertDialog.getWindow().setBackgroundDrawableResource(R.color.Transparent);
+                        alertDialog.show();
                         break;
                     }
                     default:{
@@ -457,6 +512,7 @@ public class MyTimeTableView extends RelativeLayout {
 
         for(int day_of_week=0;day_of_week<7;day_of_week++){
             int[] isOccupied = new int[15];
+            Course[] ouccupiedCourse = new Course[15];
             Cursor cursor;
             for(int i=0;i<15;i++){
                 isOccupied[i] = 0;
@@ -500,12 +556,13 @@ public class MyTimeTableView extends RelativeLayout {
                     for(int j=startTime;j<=endTime;j++){//find conflict
                         if(isOccupied[j] ==0){
                             isOccupied[j] = 1;
+                            ouccupiedCourse[j] = course;
                         } else {
                             noConflict = false;
                         }
                     }
                     if(noConflict){
-                        addItem(course.course_name+"\n@"+course.classroom,course.day_of_week,startTime,endTime,enlargeCol,R.drawable.course,course);
+                        addItem(course.course_name+"\n@"+course.classroom,course.day_of_week,startTime,endTime,enlargeCol,R.drawable.course,course,null);
                     } else {
                         Log.d("add item conflit",startTime + "-" + endTime);
                     }
@@ -552,21 +609,23 @@ public class MyTimeTableView extends RelativeLayout {
                     int startTime = timeVector.get(i).firstElement();
                     int endTime = timeVector.get(i).lastElement();
                     int noConflict = 1;
+                    Course occupCourse = null;
                     for(int j=startTime;j<=endTime;j++){//find conflict
                         if(isOccupied[j] ==0){
                             isOccupied[j] = 1;
                         } else if(isOccupied[j] == 1) {
                             isOccupied[j] = 2;
+                            occupCourse = ouccupiedCourse[j];
                             noConflict = 2;
                         } else {
                             noConflict = 0;
                         }
                     }
                     if(noConflict == 1){
-                        addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol,R.drawable.affair,affair);
+                        addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol,R.drawable.affair,affair,null);
                     } else if(noConflict == 2){//have both course and affair
                         //TODO: change background when we have both course and affair
-                        addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol,R.drawable.conflict,affair);
+                        addItem(affair.description,affair.day_of_week,startTime,endTime,enlargeCol,R.drawable.conflict,affair,occupCourse);
                     } else {
                         Log.d("add item conflit",startTime + "-" + endTime);
                     }
@@ -709,21 +768,23 @@ public class MyTimeTableView extends RelativeLayout {
                             int startTime = timeVector.get(i).firstElement();
                             int endTime = timeVector.get(i).lastElement();
                             int noConflict = 1;
+                            Course occupCourse = null;
                             for(int j=startTime;j<=endTime;j++){//find conflict
                                 if(isOccupied[j] ==0){
                                     isOccupied[j] = 1;
                                 } else if(isOccupied[j] == 1) {
                                     isOccupied[j] = 2;
+                                    occupCourse = ouccupiedCourse[j];
                                     noConflict = 2;
                                 } else {
                                     noConflict = 0;
                                 }
                             }
                             if(noConflict == 1){
-                                addItem(affair.description,day_of_week,startTime,endTime,enlargeCol,R.drawable.affair,affair);
+                                addItem(affair.description,day_of_week,startTime,endTime,enlargeCol,R.drawable.affair,affair,null);
                             } else if(noConflict == 2){//have both course and affair
                                 //TODO: change background when we have both course and affair
-                                addItem(affair.description,day_of_week,startTime,endTime,enlargeCol,R.drawable.conflict,affair);
+                                addItem(affair.description,day_of_week,startTime,endTime,enlargeCol,R.drawable.conflict,affair,occupCourse);
                             } else {
                                 Log.d("add item conflit",startTime + "-" + endTime);
                             }
