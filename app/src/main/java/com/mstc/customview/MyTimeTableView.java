@@ -1,4 +1,4 @@
-package com.mstc.moyu;
+package com.mstc.customview;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -31,6 +31,8 @@ import com.mstc.db.Course;
 import com.mstc.db.DataBaseFactory;
 import com.mstc.db.DataBaseHelper;
 import com.mstc.db.MoyuContract;
+import com.mstc.moyu.AddItemActivity;
+import com.mstc.moyu.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -97,7 +99,7 @@ public class MyTimeTableView extends RelativeLayout {
         showColNum = 7;
         textViewVector = new Vector<>();
         currentWeek = 0;
-        inflate(context,R.layout.my_time_table_view,this);
+        inflate(context, R.layout.my_time_table_view,this);
         tableRelativeLayout = (RelativeLayout)findViewById(R.id.tableRelativeLayout);
         dateScrollView = (MyHorizontalScrollView)findViewById(R.id.myDateScrollView);
         tableHorizonScrollView = (MyHorizontalScrollView)findViewById(R.id.myHorizontalScrollView);
@@ -244,7 +246,7 @@ public class MyTimeTableView extends RelativeLayout {
     /**
        * @param enlargeCol define which col to be enlarged
      */
-    void drawTable(int week,int enlargeCol){
+    public void drawTable(int week,int enlargeCol){
         RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth-(int)getResources().getDimension(R.dimen.x80),windowHeight-(int)getResources().getDimension(R.dimen.y112));
         rlp.leftMargin = (int)getResources().getDimension(R.dimen.x80);
         rlp.topMargin = (int)getResources().getDimension(R.dimen.y112);
@@ -292,7 +294,10 @@ public class MyTimeTableView extends RelativeLayout {
         addEvents(week,enlargeCol);
     }
 
-    void drawTimeTable(){
+    /**
+     *  draw the time table(including time and class)
+     */
+    public void drawTimeTable(){
         RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams((int)getResources().getDimension(R.dimen.x80),windowHeight-(int)getResources().getDimension(R.dimen.y112));
         rlp.topMargin = (int)getResources().getDimension(R.dimen.y112);
         rlp.leftMargin = 0;
@@ -320,7 +325,11 @@ public class MyTimeTableView extends RelativeLayout {
         }
     }
 
-    void drawDateTable(int enlargeCol){
+    /**
+     *  draw the date table(including date and day of week)
+     * @param enlargeCol
+     */
+    public void drawDateTable(int enlargeCol){
         RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(windowWidth-(int)getResources().getDimension(R.dimen.x80),(int)getResources().getDimension(R.dimen.y112));
         rlp.leftMargin = (int)getResources().getDimension(R.dimen.x80);
         rlp.topMargin = 0;
@@ -493,7 +502,7 @@ public class MyTimeTableView extends RelativeLayout {
     /**
      * remove all table, need to be call when redraw the table
      */
-    void cleanAllTable(){
+    public void cleanAllTable(){
         tableLayout.removeAllViews();
         myDateTable.removeAllViews();
         myTimeTable.removeAllViews();

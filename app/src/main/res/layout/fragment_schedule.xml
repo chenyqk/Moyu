@@ -4,21 +4,21 @@
     android:layout_height="match_parent">
 
 
-    <com.mstc.moyu.MyTopBarView
+    <com.mstc.customview.MyTopBarView
         android:layout_width="wrap_content"
         android:layout_height="@dimen/y96"
         android:layout_alignParentTop="true"
         android:id="@+id/myTopBarView">
-    </com.mstc.moyu.MyTopBarView>
+    </com.mstc.customview.MyTopBarView>
 
 
-    <com.mstc.moyu.MyTimeTableView
+    <com.mstc.customview.MyTimeTableView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/myTimeTableView"
         android:layout_below="@+id/myTopBarView">
 
-    </com.mstc.moyu.MyTimeTableView>
+    </com.mstc.customview.MyTimeTableView>
 
 
 

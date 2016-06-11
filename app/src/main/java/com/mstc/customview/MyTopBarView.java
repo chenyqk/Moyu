@@ -1,4 +1,4 @@
-package com.mstc.moyu;
+package com.mstc.customview;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +22,9 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.mstc.moyu.AddItemActivity;
+import com.mstc.moyu.R;
 
 /**
  * TODO: document your custom view class.
