@@ -13,6 +13,7 @@ import android.widget.TabHost;
 public class MainActivity extends ActivityGroup {
 
     private TabHost tabHost = null;
+    public static final String firstWeekMonStr = "2016-05-23";
 
 
     @Override

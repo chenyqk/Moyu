@@ -24,7 +24,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mstc.moyu.AddItemActivity;
+import com.mstc.moyu.MainActivity;
 import com.mstc.moyu.R;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * TODO: document your custom view class.
@@ -61,12 +68,25 @@ public class MyTopBarView extends RelativeLayout {
     }
 
     private void init(final Context context) {
+        Date today,firstWeekMonday;
+        Calendar c = Calendar.getInstance(TimeZone.getDefault());
+        today = c.getTime();
+        try {
+            firstWeekMonday = new SimpleDateFormat("yyyy-MM-dd").parse(MainActivity.firstWeekMonStr);
+            int dayDiff = (int)((today.getTime() - firstWeekMonday.getTime())/(24*60*60*1000));
+            currentWeek = (int)(dayDiff/7);
+            Log.d("daydiff",dayDiff+"");
+            Log.d("current week",currentWeek+"");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         weekText = new TextView(context);
         currentWeekText = new TextView(context);
-        weekStr = new SpannableString("第1周");
+        weekStr = new SpannableString("第"+(currentWeek+1)+"周");
         weekStr.setSpan(new TextAppearanceSpan(getContext(),R.style.PopupWindowStyle2),0,weekStr.length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        currentWeek = 0;
+        //currentWeek = 0;
         final View contentView = LayoutInflater.from(context).inflate(R.layout.layout_popupwindow,null);
         final PopupWindow popupWindow = new PopupWindow(contentView,popupWindowWidth,popupWindowHeight);
         fiveWeekStr = new SpannableString[20];

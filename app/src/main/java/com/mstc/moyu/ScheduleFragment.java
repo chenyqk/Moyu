@@ -13,6 +13,7 @@ import android.view.Window;
 import com.mstc.customview.MyTimeTableView;
 import com.mstc.customview.MyTopBarView;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,7 +31,8 @@ public class ScheduleFragment extends Activity {
     boolean hasMeasured = false;
     int windowWidth,windowHeight;
     int currentWeek,showWeek;
-    Date today,day;
+
+    Date today,day,firstWeekMonday;
     Calendar c;
 
     @Override
@@ -39,7 +41,17 @@ public class ScheduleFragment extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.fragment_schedule);
         c = Calendar.getInstance(TimeZone.getDefault());
-
+        today = c.getTime();
+        today = c.getTime();
+        try {
+            firstWeekMonday = new SimpleDateFormat("yyyy-MM-dd").parse(MainActivity.firstWeekMonStr);
+            int dayDiff = (int)((today.getTime() - firstWeekMonday.getTime())/(24*60*60*1000));
+            currentWeek = (int)(dayDiff/7);
+            Log.d("daydiff",dayDiff+"");
+            Log.d("current week",currentWeek+"");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         myTopBarView = (MyTopBarView)findViewById(R.id.myTopBarView);
 
         myTimeTableView = (MyTimeTableView)findViewById(R.id.myTimeTableView);
@@ -53,8 +65,7 @@ public class ScheduleFragment extends Activity {
                     windowWidth = myTimeTableView.getMeasuredWidth();
                     myTimeTableView.setWindowWidth(windowWidth);
                     myTimeTableView.setWindowHeight(windowHeight);
-                    currentWeek = 0;
-                    today = c.getTime();
+
                     myTimeTableView.setWeekDay(getWeekDay(today));
                     myTimeTableView.drawTimeTable();
                     myTimeTableView.drawDateTable(getDayOfWeek(today));
@@ -73,6 +84,7 @@ public class ScheduleFragment extends Activity {
                     Bundle bundle = intent.getExtras();
                     c.setTime(today);
                     showWeek = bundle.getInt("SHOW_WEEK");
+                    Log.d("show week",showWeek+"");
                     c.add(Calendar.DATE,7*(showWeek - currentWeek));
                     day = c.getTime();
                     myTimeTableView.cleanAllTable();

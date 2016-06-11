@@ -32,12 +32,14 @@ import com.mstc.db.DataBaseFactory;
 import com.mstc.db.DataBaseHelper;
 import com.mstc.db.MoyuContract;
 import com.mstc.moyu.AddItemActivity;
+import com.mstc.moyu.MainActivity;
 import com.mstc.moyu.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.Vector;
 /**
  * TODO: document your custom view class.
@@ -98,7 +100,19 @@ public class MyTimeTableView extends RelativeLayout {
         showRowNum = 11;
         showColNum = 7;
         textViewVector = new Vector<>();
-        currentWeek = 0;
+        //currentWeek = 0;
+        Date today,firstWeekMonday;
+        Calendar c = Calendar.getInstance(TimeZone.getDefault());
+        today = c.getTime();
+        try {
+            firstWeekMonday = new SimpleDateFormat("yyyy-MM-dd").parse(MainActivity.firstWeekMonStr);
+            int dayDiff = (int)((today.getTime() - firstWeekMonday.getTime())/(24*60*60*1000));
+            currentWeek = (int)(dayDiff/7);
+            Log.d("daydiff",dayDiff+"");
+            Log.d("current week",currentWeek+"");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         inflate(context, R.layout.my_time_table_view,this);
         tableRelativeLayout = (RelativeLayout)findViewById(R.id.tableRelativeLayout);
         dateScrollView = (MyHorizontalScrollView)findViewById(R.id.myDateScrollView);
@@ -170,7 +184,7 @@ public class MyTimeTableView extends RelativeLayout {
 
 
 
-        //insert record test
+        //insert record test, can remove after passed all test
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -202,7 +216,7 @@ public class MyTimeTableView extends RelativeLayout {
                 }
                 cursor.close();
                 //repeat affair
-                Affair affair2 = new Affair("跑步","西区运动场",2,3,"2016-06-02","14",5,"0000000");//每工作日，晚间
+                Affair affair2 = new Affair("跑步","西区运动场",2,3,"2016-06-09","14",5,"0000000");//每工作日，晚间
                 projection[0] = MoyuContract.AffairEntry.DESCRIPTION;
                 projection[1] = MoyuContract.AffairEntry.DATE;
                 selection = MoyuContract.AffairEntry.DESCRIPTION + " LIKE ?";
@@ -214,7 +228,7 @@ public class MyTimeTableView extends RelativeLayout {
                 }
                 cursor.close();
                 //delete repeat affair
-                Affair affair3 = new Affair("跑步","西区运动场",2,3,"2016-06-02","14",5,"0000000");//每工作日，晚间，第三周周四暂停跑步
+                Affair affair3 = new Affair("跑步","西区运动场",2,3,"2016-06-09","14",5,"0000000");//每工作日，晚间，第三周周四暂停跑步
                 projection[0] = MoyuContract.DeletedRepeatAffairEntry.DESCRIPTION;
                 projection[1] = MoyuContract.DeletedRepeatAffairEntry.DATE;
                 selection = MoyuContract.DeletedRepeatAffairEntry.DESCRIPTION + " LIKE ?";
