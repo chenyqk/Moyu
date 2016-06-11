@@ -1,4 +1,4 @@
-package com.mstc.moyu;
+package com.mstc.customview;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +22,9 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.mstc.moyu.AddItemActivity;
+import com.mstc.moyu.R;
 
 /**
  * TODO: document your custom view class.
@@ -70,7 +73,7 @@ public class MyTopBarView extends RelativeLayout {
         onClickListener = new OnClickListener() {
             @Override
             public void onClick(View v) {
-                popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.invisible));
+                //popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.invisible));
                 ListView listView = (ListView)contentView.findViewById(R.id.listView);
                 imageView.setImageResource(R.drawable.title_more_reverse);
                 for(int i=0;i<20;++i){

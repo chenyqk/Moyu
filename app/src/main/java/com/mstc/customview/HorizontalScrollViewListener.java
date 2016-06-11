@@ -1,4 +1,4 @@
-package com.mstc.moyu;
+package com.mstc.customview;
 
 /**
  * Created by Administrator on 2016/5/8.

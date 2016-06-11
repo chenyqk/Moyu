@@ -3,7 +3,7 @@
     android:layout_height="match_parent"
     android:id="@+id/myTimeTableRelativeLayout">
 
-    <com.mstc.moyu.MyHorizontalScrollView
+    <com.mstc.customview.MyHorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/myDateScrollView"
@@ -15,16 +15,16 @@
             android:layout_height="wrap_content"
             android:id="@+id/myDateTable"></TableLayout>
 
-    </com.mstc.moyu.MyHorizontalScrollView>
+    </com.mstc.customview.MyHorizontalScrollView>
 
 
-    <com.mstc.moyu.MyScrollView
+    <com.mstc.customview.MyScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none"
         android:overScrollMode="never"
         android:id="@+id/myScrollView">
-        <com.mstc.moyu.MyHorizontalScrollView
+        <com.mstc.customview.MyHorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/myHorizontalScrollView"
@@ -40,10 +40,10 @@
                     android:id="@+id/myTable"></TableLayout>
             </RelativeLayout>
 
-        </com.mstc.moyu.MyHorizontalScrollView>
-    </com.mstc.moyu.MyScrollView>
+        </com.mstc.customview.MyHorizontalScrollView>
+    </com.mstc.customview.MyScrollView>
 
-    <com.mstc.moyu.MyScrollView
+    <com.mstc.customview.MyScrollView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:id="@+id/myTimeScrollView"
@@ -56,6 +56,6 @@
             android:id="@+id/myTimeTable"></TableLayout>
 
 
-    </com.mstc.moyu.MyScrollView>
+    </com.mstc.customview.MyScrollView>
 
 </RelativeLayout>

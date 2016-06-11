@@ -1,4 +1,4 @@
-package com.mstc.moyu;
+package com.mstc.customview;
 
 import android.content.Context;
 import android.util.AttributeSet;

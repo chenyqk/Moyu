@@ -10,6 +10,9 @@ import android.util.Log;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 
+import com.mstc.customview.MyTimeTableView;
+import com.mstc.customview.MyTopBarView;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -84,6 +87,12 @@ public class ScheduleFragment extends Activity {
         weekChangedFilter.addAction("SHOW_WEEK_CHANGED");
         this.registerReceiver(weekChangedReceiver,weekChangedFilter);
     }
+
+    /**
+     *  get the day of week(from 0 to 6, stands for Mon. to Sun.)
+     * @param day
+     * @return
+     */
     int getDayOfWeek(Date day){
         c.setTime(day);
         int date = c.get(Calendar.DAY_OF_WEEK);
@@ -93,6 +102,12 @@ public class ScheduleFragment extends Activity {
         }
         return date;
     }
+
+    /**
+     *  given a day, return an string array of 7 days
+     * @param day
+     * @return
+     */
     String[] getWeekDay(Date day){
         String WeekDay[] = new String[7];
         Calendar c = Calendar.getInstance();
